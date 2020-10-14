@@ -25,19 +25,21 @@ localTmp=$tmpDir/local.txt
 remoteTmp=$tmpDir/remote.txt
 
 function getCont {
-  #prints folder content and corresponding code
+  #prints folder content and stats
   dirName=$1 
   for file in $dirName/*
     do  
      filename=$(basename $file)
-     code=$(stat -c '%s' ${file})
-     #code=$(md5sum $file | cut -d ' ' -f 1)
-     echo "$filename $code" 
+     size=$(stat -c '%s' ${file}) 
+     date=$(date -r ${file} '+%d/%b/%y')
+     echo "$filename $size $date" 
     done
 }
 
 #get content of remote and local directories
+printf "Accessing remote directory $remoteHost:$remoteDir\n"
 ssh $remoteHost "$(typeset -f getCont); getCont $remoteDir" >> $remoteTmp
+printf "Accessing local directory $localDir\n"
 getCont $localDir >> $localTmp
 
 #check if the tmp files are equal
@@ -46,36 +48,80 @@ NC='\033[0m'
 cmp -s $localTmp $remoteTmp \
   || echo -e "${RED}Local and remote directories diverged, please update.${NC}"
 
+#initialize lists
+files_chsize=""
+sizes_chsize=""
+dates_chsize=""
+files_chdate=""
+sizes_chdate=""
+dates_chdate=""
+files_newloc=""
+sizes_newloc=""
+dates_newloc=""
+files_newrem=""
+sizes_newrem=""
+dates_newrem=""
+
 #loop over local tmp file
-while read -r line
-  do
-   IFS=' '
-   read -a arr <<< "$line"
-   filename="${arr[0]}"
-   code="${arr[1]}"
-   if ! grep -Fxq "$line" $remoteTmp
-     then
-      if grep -wq $filename $remoteTmp
-       then
-        echo "${filename} has changed."
-       elif grep -wq $md5 $remoteTmp
-         then
-          echo "${filename} has changed name."
-       else
-        echo "${filename} is new in the local directory."
-      fi
-     fi
-  done < $localTmp
+while IFS=' ' read -r filename_l size_l date_l;do
+  read -r filename_r size_r date_r <<< $(grep ^"${filename_l}" $remoteTmp) 
+  if [ "${filename_l}" == "${filename_r}" ];then
+    if [ "${size_l}" != "${size_r}" ];then
+      files_chsize+="${filename_l} "
+      sizes_chsize+="loc:${size_l},rem:${size_r} "
+      dates_chsize+="loc:${date_l},rem:${date_r} "
+    elif [ "${date_l}" != "${date_r}" ];then
+      files_chdate+="${filename_l} "
+      sizes_chdate+="${size_l} "
+      dates_chdate+="loc:${date_l},rem:${date_r} "
+    fi
+  else
+    files_newloc+="${filename_l} "
+    sizes_newloc+="${size_l} "
+    dates_newloc+="${date_l} "
+  fi
+done < $localTmp
 
 #loop over remote tmp file
-while read -r line
-  do
-   IFS=' '
-   read -a arr <<< "$line"
-   filename="${arr[0]}"
-   code="${arr[1]}"
-   if (! grep -Fxq "$line" $localTmp) && (! grep -wq $filename $localTmp) && (! grep -wq $md5 $localTmp)
-     then
-      echo "${filename} is new in the remote directory."
-     fi
-  done < $remoteTmp
+while IFS=' ' read -r filename_r size_r date_r;do
+  read -r filename_l size_l date_l <<< $(grep ^"${filename_r}" $localTmp)
+  if [ "${filename_r}" != "${filename_l}" ];then
+    files_newrem+="${filename_r} "
+    sizes_newrem+="${size_r} "
+    dates_newrem+="${date_r} "
+  fi
+done < $remoteTmp
+
+function print_lists {
+  #print formatted info
+  list1=$1
+  list2=$2
+  list3=$3
+  paste <(printf "%-30s\n" $list1) <(printf "%-30s\n" $list2) <(printf "%-30s\n" $list3)
+}
+
+function print_sep {
+  #print separator
+  length=$1
+  printf '=%.0s' $(eval "echo {1.."$(($length))"}")
+  printf "\n"
+}
+
+#printouts
+sep_length=90
+print_sep $sep_length
+printf "CHANGED SIZE:\n"
+print_lists "" "size" "date"
+print_lists "$files_chsize" "$sizes_chsize" "$dates_chsize"
+print_sep $sep_length
+printf "CHANGED DATE:\n"
+print_lists "" "size" "date"
+print_lists "$files_chdate" "$sizes_chdate" "$dates_chdate"
+print_sep $sep_length
+printf "NEW IN LOCAL:\n"
+print_lists "" "size" "date"
+print_lists "$files_newloc" "$sizes_newloc" "$dates_newloc"
+print_sep $sep_length
+printf "NEW IN REMOTE:\n"
+print_lists "" "size" "date"
+print_lists "$files_newrem" "$sizes_newrem" "$dates_newrem"
