@@ -1,7 +1,7 @@
 #!/bin/bash
-#title          :run_modelMaker_CRttbar.sh
-#description    :Script for running modelMaker on the CRttbar region. 
-#author         :fcelli 
+#title		:run_modelMaker.sh
+#description	:Script for running modelMaker on the hbbjet analysis regions. 
+#author		:fcelli 
 
 SCRIPT=$(basename $0)
 
