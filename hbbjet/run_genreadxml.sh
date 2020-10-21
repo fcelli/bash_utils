@@ -25,7 +25,7 @@ usage() {
   printf "\t%s\n\n" "bash $SCRIPT --tag <TAG> --mode <MODE> [--poi <POI> --dtype <DTYPE>]"
   printf "%s\n\n" "Options:"
   printf "\t%-20s\n\t\t%s\n\n" "-t, --tag TAG" "TAG is the production name tag"
-  printf "\t%-20s\n\t\t%s\n\t\t%s\n\n" "-m, --mode MODE" "- MODE=Comb: create combined fit xml card" "- MODE=CRttbarOnly: create CRttbar-only fit xml card"
+  printf "\t%-20s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\n" "-m, --mode MODE" "- MODE=Comb: create combined fit xml card" "- MODE=CRttbarOnly_incl: create CRttbar-only fit xml card (inclusive)" "- MODE=CRttbarOnly_bins: create CRttbar-only fit xml card (pT bins)" "- MODE=CRttbarOnly: create CRttbar-only fit xml card (inclusive and pT bins)"
   printf "\t%-20s\n\t\t%s\n\n" "-p, --poi POI" "POI is the parameter of interest"
   printf "\t%-20s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n" "-d, --dtype DTYPE[=all]" "- DTYPE=data: run on data" "- DTYPE=asimov: run on asimov" "- DTYPE=all: run on data and asimov" 
   printf "\t%-20s\n\t\t%s\n\n" "-h, --help" "Display this help and exit"
@@ -73,14 +73,20 @@ fi
 
 #initialise mode variables
 do_Comb=false
-do_CRttbarOnly=false
+do_CRttbarOnly_incl=false
+do_CRttbarOnly_bins=false
 
 #run options
 case $MODE in
   Comb )		do_Comb=true 
                         ;;
-  CRttbarOnly )		do_CRttbarOnly=true
+  CRttbarOnly )		do_CRttbarOnly_incl=true
+			do_CRttbarOnly_bins=true
                         ;;
+  CRttbarOnly_incl )	do_CRttbarOnly_incl=true
+			;;
+  CRttbarOnly_bins )	do_CRttbarOnly_bins=true
+			;;
   * )                   printf "Error: unexpected MODE value.\n"
                         exit 1
 esac
@@ -93,21 +99,69 @@ if $do_Comb; then
   title='Comb'
   if [ ! $POI ]; then
     #set default poi value
-    POI=""
+    poi=""
   else
-    POI="--poi ${POI}"
+    poi="--poi ${POI}"
   fi
   for dtype in $DTYPE; do
     #generate xml cards
-    cmd="python genxml/generate.py SR_l__${TAG} SR_s__${TAG} CRttbar__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins ${nbins_SRL} ${nbins_SRS} ${nbins_CRttbar} --fr '[${m_min_SRL},${m_max_SRL}]' '[${m_min_SRS},${m_max_SRS}]' '[${m_min_CRttbar},${m_max_CRttbar}]' --data ${dtype} ${dtype} ${dtype} --qcd srl srs None ${POI}"
-    echo ${cmd}
-    eval ${cmd}
+    cmd="python genxml/generate.py SR_l__${TAG} SR_s__${TAG} CRttbar__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins ${nbins_SRL} ${nbins_SRS} ${nbins_CRttbar} --fr '[${m_min_SRL},${m_max_SRL}]' '[${m_min_SRS},${m_max_SRS}]' '[${m_min_CRttbar},${m_max_CRttbar}]' --data ${dtype} ${dtype} ${dtype} --qcd srl srs None ${poi}"
+    echo $cmd
+    eval $cmd
     #read xml cards
     cd xmlAnaWSBuilder
     cmd="./exe/XMLReader -x config/hbbj/${title}_${dtype}_${TAG}/${title}.xml" 
-    echo ${cmd}
-    eval ${cmd}
+    echo $cmd
+    eval $cmd
     cd ..
+  done
+fi
+
+#generate and read CRttbarOnly xml cards (inclusive)
+if $do_CRttbarOnly_incl; then
+  title='CRttbarOnly'
+  if [ ! $POI ]; then
+    #set default poi value
+    poi="--poi mu_ttbar"
+  else
+    poi="--poi ${POI}"
+  fi
+  for dtype in $DTYPE; do
+    #generate xml cards
+    cmd="python genxml/generate.py CRttbar__${TAG} --title ${title} --tag ${dtype}_${TAG} --data ${dtype} --bins ${nbins_CRttbar} --fr '[${m_min_CRttbar},${m_max_CRttbar}]' ${poi}"
+    echo $cmd
+    eval $cmd
+    #read xml cards
+    cd xmlAnaWSBuilder
+    cmd="./exe/XMLReader -x config/hbbj/${title}_${dtype}_${TAG}/${title}.xml"
+    echo $cmd
+    eval $cmd
+    cd ..
+  done
+fi
+
+#generate and read CRttbarOnly xml cards (pT bins)
+if $do_CRttbarOnly_bins; then
+  for bin in '0' '1' '2'; do
+    title="CRttbarOnly_b${bin}"
+    if [ ! $POI ]; then
+      #set default poi value
+      poi="--poi mu_ttbar_b${bin}"
+    else
+      poi="--poi ${POI}"
+    fi
+    for dtype in $DTYPE; do
+      #generate xml cards
+      cmd="python genxml/generate.py CRttbar_${bin}__${TAG} --title ${title} --tag ${dtype}_${TAG} --data ${dtype} --bins ${nbins_CRttbar} --fr '[${m_min_CRttbar},${m_max_CRttbar}]' ${poi}"
+      echo $cmd
+      eval $cmd
+      #read xml cards
+      cd xmlAnaWSBuilder
+      cmd="./exe/XMLReader -x config/hbbj/${title}_${dtype}_${TAG}/${title}.xml"
+      echo $cmd
+      eval $cmd
+      cd ..
+    done
   done
 fi
 
