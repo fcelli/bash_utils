@@ -22,13 +22,34 @@ m_max_CRttbar='200'
 
 usage() {
   printf "%s\n\n" "From within xmlfit_boostedhbb/:"
-  printf "\t%s\n\n" "bash $SCRIPT --tag <TAG> --mode <MODE> [--poi <POI> --dtype <DTYPE>]"
+  printf "\t%s\n\n" "bash $SCRIPT --tag <TAG> --mode <MODE> [--poi <POI> --dtype <DTYPE> --help]"
   printf "%s\n\n" "Options:"
-  printf "\t%-20s\n\t\t%s\n\n" "-t, --tag TAG" "TAG is the production name tag"
-  printf "\t%-20s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\n" "-m, --mode MODE" "- MODE=Comb: create combined fit xml card" "- MODE=CRttbarOnly_incl: create CRttbar-only fit xml card (inclusive)" "- MODE=CRttbarOnly_bins: create CRttbar-only fit xml card (pT bins)" "- MODE=CRttbarOnly: create CRttbar-only fit xml card (inclusive and pT bins)"
-  printf "\t%-20s\n\t\t%s\n\n" "-p, --poi POI" "POI is the parameter of interest"
-  printf "\t%-20s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n" "-d, --dtype DTYPE[=all]" "- DTYPE=data: run on data" "- DTYPE=asimov: run on asimov" "- DTYPE=all: run on data and asimov" 
-  printf "\t%-20s\n\t\t%s\n\n" "-h, --help" "Display this help and exit"
+  #-t, --tag TAG
+  printf "\t%-20s\n" "-t, --tag TAG"
+	printf "\t\t%s\n" "TAG is the production name tag"
+        printf "\n"
+  #-m, --mode MODE
+  printf "\t%-20s\n" "-m, --mode MODE" 
+	printf "\t\t%s\n" "- MODE=Comb: create combined fit xml cards"
+	printf "\t\t%s\n" "- MODE=CRttbarOnly_incl: create CRttbar-only fit xml cards (inclusive)"
+	printf "\t\t%s\n" "- MODE=CRttbarOnly_bins: create CRttbar-only fit xml cards (pT bins)"
+	printf "\t\t%s\n" "- MODE=CRttbarOnly: create CRttbar-only fit xml cards (inclusive and pT bins)"
+	printf "\t\t%s\n" "- MODE=all: create xml cards for all defined regions"
+        printf "\n"
+  #-p, --poi POI
+  printf "\t%-20s\n" "-p, --poi POI"
+	printf "\t\t%s\n" "POI is the parameter of interest"
+        printf "\n"
+  #-d, --dtype DTYPE
+  printf "\t%-20s\n" "-d, --dtype DTYPE[=all]"
+	printf "\t\t%s\n" "- DTYPE=data: run on data"
+	printf "\t\t%s\n" "- DTYPE=asimov: run on asimov"
+	printf "\t\t%s\n" "- DTYPE=all: run on data and asimov"
+        printf "\n"
+  #-h, --help
+  printf "\t%-20s\n" "-h, --help"
+	printf "\t\t%s\n" "Display this help and exit"
+        printf "\n"
 }
 
 #parse arguments
@@ -86,6 +107,10 @@ case $MODE in
   CRttbarOnly_incl )	do_CRttbarOnly_incl=true
 			;;
   CRttbarOnly_bins )	do_CRttbarOnly_bins=true
+			;;
+  all )			do_Comb=true
+			do_CRttbarOnly_incl=true
+                        do_CRttbarOnly_bins=true
 			;;
   * )                   printf "Error: unexpected MODE value.\n"
                         exit 1
