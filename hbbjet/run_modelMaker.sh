@@ -11,13 +11,34 @@ BINW_SR=0.5
 
 usage() {
   printf "%s\n\n" "From within xmlfit_boostedhbb/:"
-  printf "\t%s\n\n" "bash $SCRIPT --tag <TAG> --jpath <JPATH> --mode <MODE> [--condor]"
+  printf "\t%s\n\n" "bash $SCRIPT --tag <TAG> --jpath <JPATH> --mode <MODE> [--condor --help]"
   printf "%s\n\n" "Options:"
-  printf "\t%-20s\n\t\t%s\n\n" "-t, --tag TAG" "TAG is the production name tag"
-  printf "\t%-20s\n\t\t%s\n\n" "-p, --jpath JPATH" "JPATH is the json file directory path"
-  printf "\t%-20s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\t\t%s\n\n" "-m, --mode MODE" "- MODE=CRttbar_incl: run on CRttbar inclusive" "- MODE=CRttbar_bins: run on CRttbar pT bins" "- MODE=CRttbar: run on all CRttbar modes" "- MODE=SR_incl: run on SR inclusive" "- MODE=STXS_incZ: run on STXS incZ bins" "- MODE=SR: run on all SR modes" "- MODE=all: run on everything"
-  printf "\t%-20s\n\t\t%s\n\n" "-c, --condor" "Submit jobs to HTCondor"
-  printf "\t%-20s\n\t\t%s\n\n" "-h, --help" "Display this help and exit"
+  #-t, --tag TAG
+  printf "\t%-20s\n" "-t, --tag TAG"
+	printf "\t\t%s\n" "TAG is the production name tag"
+	printf "\n"
+  #-p, --jpath JPATH
+  printf "\t%-20s\n" "-p, --jpath JPATH"
+	printf "\t\t%s\n" "JPATH is the json file directory path"
+	printf "\n"
+  #-m, --mode MODE
+  printf "\t%-20s\n" "-m, --mode MODE"
+	printf "\t\t%s\n" "- MODE=CRttbar_incl: run on CRttbar inclusive"
+	printf "\t\t%s\n" "- MODE=CRttbar_bins: run on CRttbar pT bins"
+	printf "\t\t%s\n" "- MODE=CRttbar: run on all CRttbar modes"
+	printf "\t\t%s\n" "- MODE=SR_incl: run on SR inclusive"
+	printf "\t\t%s\n" "- MODE=STXS_incZ: run on STXS incZ bins"
+	printf "\t\t%s\n" "- MODE=SR: run on all SR modes"
+	printf "\t\t%s\n" "- MODE=all: run on everything"
+	printf "\n"
+  #-c, --condor
+  printf "\t%-20s\n" "-c, --condor"
+	printf "\t\t%s\n" "Submit jobs to HTCondor"
+	printf "\n"
+  #-h, --help
+  printf "\t%-20s\n" "-h, --help"
+	printf "\t\t%s\n" "Display this help and exit"
+	printf "\n"
 }
 
 #parse arguments
