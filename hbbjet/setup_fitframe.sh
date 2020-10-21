@@ -13,6 +13,9 @@ lsetup git
 lsetup "views LCG_97_ATLAS_1 x86_64-centos7-gcc8-opt"
 source setup.sh
 
-source xmlAnaWSBuilder/setup_lxplus.sh
+cd xmlAnaWSBuilder
+source setup_lxplus.sh
 
-source quickFit/setup_lxplus.sh
+cd ../quickFit
+source setup_lxplus.sh
+cd ..
