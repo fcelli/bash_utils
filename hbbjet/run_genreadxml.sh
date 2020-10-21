@@ -31,6 +31,7 @@ usage() {
   #-m, --mode MODE
   printf "\t%-20s\n" "-m, --mode MODE" 
 	printf "\t\t%s\n" "- MODE=Comb: create combined fit xml cards"
+        printf "\t\t%s\n" "- MODE=STXS_incZ: create STXS fit xml cards (inclusive Z)"
 	printf "\t\t%s\n" "- MODE=CRttbarOnly_incl: create CRttbar-only fit xml cards (inclusive)"
 	printf "\t\t%s\n" "- MODE=CRttbarOnly_bins: create CRttbar-only fit xml cards (pT bins)"
 	printf "\t\t%s\n" "- MODE=CRttbarOnly: create CRttbar-only fit xml cards (inclusive and pT bins)"
@@ -94,6 +95,7 @@ fi
 
 #initialise mode variables
 do_Comb=false
+do_STXS_incZ=false
 do_CRttbarOnly_incl=false
 do_CRttbarOnly_bins=false
 
@@ -101,6 +103,8 @@ do_CRttbarOnly_bins=false
 case $MODE in
   Comb )		do_Comb=true 
                         ;;
+  STXS_incZ )		do_STXS_incZ=true
+			;;
   CRttbarOnly )		do_CRttbarOnly_incl=true
 			do_CRttbarOnly_bins=true
                         ;;
@@ -109,6 +113,7 @@ case $MODE in
   CRttbarOnly_bins )	do_CRttbarOnly_bins=true
 			;;
   all )			do_Comb=true
+			do_STXS_incZ=true
 			do_CRttbarOnly_incl=true
                         do_CRttbarOnly_bins=true
 			;;
@@ -136,6 +141,29 @@ if $do_Comb; then
     #read xml cards
     cd xmlAnaWSBuilder
     cmd="./exe/XMLReader -x config/hbbj/${title}_${dtype}_${TAG}/${title}.xml" 
+    echo $cmd
+    eval $cmd
+    cd ..
+  done
+fi
+
+#generate and read STXS incZ xml cards
+if $do_STXS_incZ; then
+  title='STXS_incZ'
+  if [ ! $POI ]; then
+    #set default poi value
+    poi=""
+  else
+    poi="--poi ${POI}"
+  fi
+  for dtype in $DTYPE; do
+    #generate xml cards
+    cmd="python genxml/generate.py STXS_incZ_l1__${TAG} STXS_incZ_l2__${TAG} STXS_incZ_s0__${TAG} STXS_incZ_s1__${TAG} STXS_incZ_s2__${TAG} CRttbar_0__${TAG} CRttbar_1__${TAG} CRttbar_2__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins 290 280 280 280 270 ${nbins_CRttbar} ${nbins_CRttbar} ${nbins_CRttbar} --fr '[65,210]' '[70,210]' '[70,210]' '[70,210]' '[75,210]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' --data ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} --qcd srl1 srl2_a srs0_a srs1 srs2 None None None --qcdsy 5e5 5e5 5e5 5e5 5e5 ${poi}"
+    echo $cmd
+    eval $cmd
+    #read xml cards
+    cd xmlAnaWSBuilder
+    cmd="./exe/XMLReader -x config/hbbj/${title}_${dtype}_${TAG}/${title}.xml"
     echo $cmd
     eval $cmd
     cd ..
