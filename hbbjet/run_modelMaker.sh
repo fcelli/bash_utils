@@ -14,31 +14,31 @@ usage() {
   printf "\t%s\n\n" "bash $SCRIPT --tag <TAG> --jpath <JPATH> --mode <MODE> [--condor --help]"
   printf "%s\n\n" "Options:"
   #-t, --tag TAG
-  printf "\t%-20s\n" "-t, --tag TAG"
-	printf "\t\t%s\n" "TAG is the production name tag"
-	printf "\n"
+  printf "\t%-20s\n" "--tag TAG"
+    printf "\t\t%s\n" "TAG is the production name tag"
+    printf "\n"
   #-p, --jpath JPATH
-  printf "\t%-20s\n" "-p, --jpath JPATH"
-	printf "\t\t%s\n" "JPATH is the json file directory path"
-	printf "\n"
+  printf "\t%-20s\n" "--jpath JPATH"
+    printf "\t\t%s\n" "JPATH is the json file directory path"
+    printf "\n"
   #-m, --mode MODE
-  printf "\t%-20s\n" "-m, --mode MODE"
-	printf "\t\t%s\n" "- MODE=CRttbar_incl: run on CRttbar inclusive"
-	printf "\t\t%s\n" "- MODE=CRttbar_bins: run on CRttbar pT bins"
-	printf "\t\t%s\n" "- MODE=CRttbar: run on all CRttbar modes"
-	printf "\t\t%s\n" "- MODE=SR_incl: run on SR inclusive"
-	printf "\t\t%s\n" "- MODE=STXS_incZ: run on STXS incZ bins"
-	printf "\t\t%s\n" "- MODE=SR: run on all SR modes"
-	printf "\t\t%s\n" "- MODE=all: run on everything"
-	printf "\n"
+  printf "\t%-20s\n" "--mode MODE"
+    printf "\t\t%s\n" "- MODE=CRttbar_incl: run on CRttbar inclusive"
+    printf "\t\t%s\n" "- MODE=CRttbar_bins: run on CRttbar pT bins"
+    printf "\t\t%s\n" "- MODE=CRttbar: run on all CRttbar modes"
+    printf "\t\t%s\n" "- MODE=SR_incl: run on SR inclusive"
+    printf "\t\t%s\n" "- MODE=STXS_incZ: run on STXS incZ bins"
+    printf "\t\t%s\n" "- MODE=SR: run on all SR modes"
+    printf "\t\t%s\n" "- MODE=all: run on everything"
+    printf "\n"
   #-c, --condor
-  printf "\t%-20s\n" "-c, --condor"
-	printf "\t\t%s\n" "Submit jobs to HTCondor"
-	printf "\n"
+  printf "\t%-20s\n" "--condor"
+    printf "\t\t%s\n" "Submit jobs to HTCondor"
+    printf "\n"
   #-h, --help
   printf "\t%-20s\n" "-h, --help"
-	printf "\t\t%s\n" "Display this help and exit"
-	printf "\n"
+    printf "\t\t%s\n" "Display this help and exit"
+    printf "\n"
 }
 
 #parse arguments
@@ -46,22 +46,28 @@ unset TAG JPATH MODE
 CONDOR=false
 while [ "$1" != "" ]; do
   case $1 in
-    -t | --tag )	shift
-			TAG=$1
-			;;
-    -p | --jpath )	shift
-			JPATH=$1
-			;;
-    -m | --mode )	shift
-			MODE=$1
-			;;
-    -c | --condor )	CONDOR=true
-			;;
-    -h | --help )	usage
-			exit 0 
-			;;
-    * )			usage
-			exit 1
+    --tag )
+      shift
+      TAG=$1
+      ;;
+    --jpath )
+      shift
+      JPATH=$1
+      ;;
+    --mode )
+      shift
+      MODE=$1
+      ;;
+    --condor )
+      CONDOR=true
+      ;;
+    -h | --help )
+      usage
+      exit 0
+      ;;
+    * )
+      usage
+      exit 1
   esac
   shift
 done
@@ -94,27 +100,35 @@ do_STXS_incZ=false
 
 #run options
 case $MODE in
-  CRttbar )		do_CRttbar_incl=true
-			do_CRttbar_bins=true
-			;;
-  CRttbar_incl )	do_CRttbar_incl=true
-			;;
-  CRttbar_bins )	do_CRttbar_bins=true
-			;;
-  SR )                  do_SR_incl=true
-                        do_STXS_incZ=true
-                        ;;
-  SR_incl )		do_SR_incl=true
-         		;;
-  STXS_incZ )		do_STXS_incZ=true
-			;;
-  all )                 do_CRttbar_incl=true
-			do_CRttbar_bins=true
-			do_SR_incl=true
-			do_STXS_incZ=true
-			;;
-  * )    		printf "Error: unexpected MODE value.\n"
-         		exit 1
+  CRttbar )
+    do_CRttbar_incl=true
+    do_CRttbar_bins=true
+    ;;
+  CRttbar_incl )
+    do_CRttbar_incl=true
+    ;;
+  CRttbar_bins )
+    do_CRttbar_bins=true
+    ;;
+  SR )
+    do_SR_incl=true
+    do_STXS_incZ=true
+    ;;
+  SR_incl )
+    do_SR_incl=true
+    ;;
+  STXS_incZ )
+    do_STXS_incZ=true
+    ;;
+  all )
+    do_CRttbar_incl=true
+    do_CRttbar_bins=true
+    do_SR_incl=true
+    do_STXS_incZ=true
+    ;;
+  * )
+    printf "Error: unexpected MODE value.\n"
+    exit 1
 esac
 
 #---------------------------------------------------------------------------------------------------------

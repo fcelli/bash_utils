@@ -25,32 +25,32 @@ usage() {
   printf "\t%s\n\n" "bash $SCRIPT --tag <TAG> --mode <MODE> [--poi <POI> --dtype <DTYPE> --help]"
   printf "%s\n\n" "Options:"
   #-t, --tag TAG
-  printf "\t%-20s\n" "-t, --tag TAG"
-	printf "\t\t%s\n" "TAG is the production name tag"
-        printf "\n"
+  printf "\t%-20s\n" "--tag TAG"
+    printf "\t\t%s\n" "TAG is the production name tag"
+    printf "\n"
   #-m, --mode MODE
-  printf "\t%-20s\n" "-m, --mode MODE" 
-	printf "\t\t%s\n" "- MODE=Comb: create combined fit xml cards"
-        printf "\t\t%s\n" "- MODE=STXS_incZ: create STXS fit xml cards (inclusive Z)"
-	printf "\t\t%s\n" "- MODE=CRttbarOnly_incl: create CRttbar-only fit xml cards (inclusive)"
-	printf "\t\t%s\n" "- MODE=CRttbarOnly_bins: create CRttbar-only fit xml cards (pT bins)"
-	printf "\t\t%s\n" "- MODE=CRttbarOnly: create CRttbar-only fit xml cards (inclusive and pT bins)"
-	printf "\t\t%s\n" "- MODE=all: create xml cards for all defined regions"
-        printf "\n"
+  printf "\t%-20s\n" "--mode MODE"
+    printf "\t\t%s\n" "- MODE=Comb: create combined fit xml cards"
+    printf "\t\t%s\n" "- MODE=STXS_incZ: create STXS fit xml cards (inclusive Z)"
+    printf "\t\t%s\n" "- MODE=CRttbarOnly_incl: create CRttbar-only fit xml cards (inclusive)"
+    printf "\t\t%s\n" "- MODE=CRttbarOnly_bins: create CRttbar-only fit xml cards (pT bins)"
+    printf "\t\t%s\n" "- MODE=CRttbarOnly: create CRttbar-only fit xml cards (inclusive and pT bins)"
+    printf "\t\t%s\n" "- MODE=all: create xml cards for all defined regions"
+    printf "\n"
   #-p, --poi POI
-  printf "\t%-20s\n" "-p, --poi POI"
-	printf "\t\t%s\n" "POI is the parameter of interest"
-        printf "\n"
+  printf "\t%-20s\n" "--poi POI"
+    printf "\t\t%s\n" "POI is the parameter of interest"
+    printf "\n"
   #-d, --dtype DTYPE
-  printf "\t%-20s\n" "-d, --dtype DTYPE[=all]"
-	printf "\t\t%s\n" "- DTYPE=data: run on data"
-	printf "\t\t%s\n" "- DTYPE=asimov: run on asimov"
-	printf "\t\t%s\n" "- DTYPE=all: run on data and asimov"
-        printf "\n"
+  printf "\t%-20s\n" "--dtype DTYPE[=all]"
+    printf "\t\t%s\n" "- DTYPE=data: run on data"
+    printf "\t\t%s\n" "- DTYPE=asimov: run on asimov"
+    printf "\t\t%s\n" "- DTYPE=all: run on data and asimov"
+    printf "\n"
   #-h, --help
   printf "\t%-20s\n" "-h, --help"
-	printf "\t\t%s\n" "Display this help and exit"
-        printf "\n"
+    printf "\t\t%s\n" "Display this help and exit"
+    printf "\n"
 }
 
 #parse arguments
@@ -58,23 +58,29 @@ DTYPE='all'
 unset TAG MODE POI
 while [ "$1" != "" ]; do
   case $1 in
-    -t | --tag )        shift
-                        TAG=$1
-                        ;;
-    -m | --mode )       shift
-                        MODE=$1
-                        ;;
-    -p | --poi )	shift
-			POI=$1
-                        ;;
-    -d | --dtype )	shift
-			DTYPE=$1
-			;;
-    -h | --help )       usage
-                        exit 0
-                        ;;
-    * )                 usage
-                        exit 1
+    --tag )
+      shift
+      TAG=$1
+      ;;
+    --mode )
+      shift
+      MODE=$1
+      ;;
+    --poi )
+      shift
+      POI=$1
+      ;;
+    --dtype )
+      shift
+      DTYPE=$1
+      ;;
+    --help )
+      usage
+      exit 0
+      ;;
+    * )
+      usage
+      exit 1
   esac
   shift
 done
@@ -101,24 +107,31 @@ do_CRttbarOnly_bins=false
 
 #run options
 case $MODE in
-  Comb )		do_Comb=true 
-                        ;;
-  STXS_incZ )		do_STXS_incZ=true
-			;;
-  CRttbarOnly )		do_CRttbarOnly_incl=true
-			do_CRttbarOnly_bins=true
-                        ;;
-  CRttbarOnly_incl )	do_CRttbarOnly_incl=true
-			;;
-  CRttbarOnly_bins )	do_CRttbarOnly_bins=true
-			;;
-  all )			do_Comb=true
-			do_STXS_incZ=true
-			do_CRttbarOnly_incl=true
-                        do_CRttbarOnly_bins=true
-			;;
-  * )                   printf "Error: unexpected MODE value.\n"
-                        exit 1
+  Comb )
+    do_Comb=true
+    ;;
+  STXS_incZ )
+    do_STXS_incZ=true
+    ;;
+  CRttbarOnly )
+    do_CRttbarOnly_incl=true
+    do_CRttbarOnly_bins=true
+    ;;
+  CRttbarOnly_incl )
+    do_CRttbarOnly_incl=true
+    ;;
+  CRttbarOnly_bins )
+    do_CRttbarOnly_bins=true
+    ;;
+  all )
+    do_Comb=true
+    do_STXS_incZ=true
+    do_CRttbarOnly_incl=true
+    do_CRttbarOnly_bins=true
+    ;;
+  * )
+    printf "Error: unexpected MODE value.\n"
+    exit 1
 esac
 
 #---------------------------------------------------------------------------------------------------------
