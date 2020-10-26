@@ -30,11 +30,11 @@ usage() {
     printf "\n"
   #-m, --mode MODE
   printf "\t%-20s\n" "--mode MODE"
-    printf "\t\t%s\n" "- MODE=Comb: create combined fit xml cards"
-    printf "\t\t%s\n" "- MODE=STXS_incZ: create STXS fit xml cards (inclusive Z)"
-    printf "\t\t%s\n" "- MODE=CRttbarOnly_incl: create CRttbar-only fit xml cards (inclusive)"
-    printf "\t\t%s\n" "- MODE=CRttbarOnly_bins: create CRttbar-only fit xml cards (pT bins)"
-    printf "\t\t%s\n" "- MODE=CRttbarOnly: create CRttbar-only fit xml cards (inclusive and pT bins)"
+    printf "\t\t%s\n" "- MODE=SR: create SR combined fit xml cards"
+    printf "\t\t%s\n" "- MODE=SR_STXS_incZ: create SR STXS fit xml cards (inclusive Z)"
+    printf "\t\t%s\n" "- MODE=CRttbar_incl: create CRttbar-only fit xml cards (inclusive)"
+    printf "\t\t%s\n" "- MODE=CRttbar_bins: create CRttbar-only fit xml cards (pT bins)"
+    printf "\t\t%s\n" "- MODE=CRttbar: create CRttbar-only fit xml cards (inclusive and pT bins)"
     printf "\t\t%s\n" "- MODE=all: create xml cards for all defined regions"
     printf "\n"
   #-p, --poi POI
@@ -100,34 +100,34 @@ elif [ "$DTYPE" != 'asimov' ] && [ "$DTYPE" != 'data' ]; then
 fi
 
 #initialise mode variables
-do_Comb=false
-do_STXS_incZ=false
-do_CRttbarOnly_incl=false
-do_CRttbarOnly_bins=false
+do_SR=false
+do_SR_STXS_incZ=false
+do_CRttbar_incl=false
+do_CRttbar_bins=false
 
 #run options
 case $MODE in
-  Comb )
-    do_Comb=true
+  SR )
+    do_SR=true
     ;;
-  STXS_incZ )
-    do_STXS_incZ=true
+  SR_STXS_incZ )
+    do_SR_STXS_incZ=true
     ;;
-  CRttbarOnly )
-    do_CRttbarOnly_incl=true
-    do_CRttbarOnly_bins=true
+  CRttbar )
+    do_CRttbar_incl=true
+    do_CRttbar_bins=true
     ;;
-  CRttbarOnly_incl )
-    do_CRttbarOnly_incl=true
+  CRttbar_incl )
+    do_CRttbar_incl=true
     ;;
-  CRttbarOnly_bins )
-    do_CRttbarOnly_bins=true
+  CRttbar_bins )
+    do_CRttbar_bins=true
     ;;
   all )
-    do_Comb=true
-    do_STXS_incZ=true
-    do_CRttbarOnly_incl=true
-    do_CRttbarOnly_bins=true
+    do_SR=true
+    do_SR_STXS_incZ=true
+    do_CRttbar_incl=true
+    do_CRttbar_bins=true
     ;;
   * )
     printf "Error: unexpected MODE value.\n"
@@ -137,9 +137,9 @@ esac
 #---------------------------------------------------------------------------------------------------------
 #run genreadxml
 
-#generate and read Comb xml cards
-if $do_Comb; then
-  title='Comb'
+#generate and read SR combined xml cards
+if $do_SR; then
+  title='SR'
   if [ ! $POI ]; then
     #set default poi value
     poi=""
@@ -160,9 +160,9 @@ if $do_Comb; then
   done
 fi
 
-#generate and read STXS incZ xml cards
-if $do_STXS_incZ; then
-  title='STXS_incZ'
+#generate and read SR STXS xml cards (inclusive Z)
+if $do_SR_STXS_incZ; then
+  title='SR_STXS_incZ'
   if [ ! $POI ]; then
     #set default poi value
     poi=""
@@ -171,7 +171,7 @@ if $do_STXS_incZ; then
   fi
   for dtype in $DTYPE; do
     #generate xml cards
-    cmd="python genxml/generate.py STXS_incZ_l1__${TAG} STXS_incZ_l2__${TAG} STXS_incZ_s0__${TAG} STXS_incZ_s1__${TAG} STXS_incZ_s2__${TAG} CRttbar_0__${TAG} CRttbar_1__${TAG} CRttbar_2__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins 290 280 280 280 270 ${nbins_CRttbar} ${nbins_CRttbar} ${nbins_CRttbar} --fr '[65,210]' '[70,210]' '[70,210]' '[70,210]' '[75,210]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' --data ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} --qcd srl1 srl2_a srs0_a srs1 srs2 None None None --qcdsy 5e5 5e5 5e5 5e5 5e5 ${poi}"
+    cmd="python genxml/generate.py SR_STXS_incZ_l1__${TAG} SR_STXS_incZ_l2__${TAG} SR_STXS_incZ_s0__${TAG} SR_STXS_incZ_s1__${TAG} SR_STXS_incZ_s2__${TAG} CRttbar_0__${TAG} CRttbar_1__${TAG} CRttbar_2__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins 290 280 280 280 270 ${nbins_CRttbar} ${nbins_CRttbar} ${nbins_CRttbar} --fr '[65,210]' '[70,210]' '[70,210]' '[70,210]' '[75,210]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' --data ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} --qcd srl1 srl2_a srs0_a srs1 srs2 None None None --qcdsy 5e5 5e5 5e5 5e5 5e5 ${poi}"
     echo $cmd
     eval $cmd
     #read xml cards
@@ -183,9 +183,9 @@ if $do_STXS_incZ; then
   done
 fi
 
-#generate and read CRttbarOnly xml cards (inclusive)
-if $do_CRttbarOnly_incl; then
-  title='CRttbarOnly'
+#generate and read CRttbar-only xml cards (inclusive)
+if $do_CRttbar_incl; then
+  title='CRttbar'
   if [ ! $POI ]; then
     #set default poi value
     poi="--poi mu_ttbar"
@@ -206,10 +206,10 @@ if $do_CRttbarOnly_incl; then
   done
 fi
 
-#generate and read CRttbarOnly xml cards (pT bins)
-if $do_CRttbarOnly_bins; then
+#generate and read CRttbar-only xml cards (pT bins)
+if $do_CRttbar_bins; then
   for bin in '0' '1' '2'; do
-    title="CRttbarOnly_b${bin}"
+    title="CRttbar_b${bin}"
     if [ ! $POI ]; then
       #set default poi value
       poi="--poi mu_ttbar_b${bin}"

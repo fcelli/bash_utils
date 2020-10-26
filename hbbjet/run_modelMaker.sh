@@ -27,7 +27,7 @@ usage() {
     printf "\t\t%s\n" "- MODE=CRttbar_bins: run on CRttbar pT bins"
     printf "\t\t%s\n" "- MODE=CRttbar: run on all CRttbar modes"
     printf "\t\t%s\n" "- MODE=SR_incl: run on SR inclusive"
-    printf "\t\t%s\n" "- MODE=STXS_incZ: run on STXS incZ bins"
+    printf "\t\t%s\n" "- MODE=SR_STXS_incZ: run on SR STXS incZ bins"
     printf "\t\t%s\n" "- MODE=SR: run on all SR modes"
     printf "\t\t%s\n" "- MODE=all: run on everything"
     printf "\n"
@@ -96,7 +96,7 @@ fi
 do_CRttbar_incl=false
 do_CRttbar_bins=false
 do_SR_incl=false
-do_STXS_incZ=false
+do_SR_STXS_incZ=false
 
 #run options
 case $MODE in
@@ -112,19 +112,19 @@ case $MODE in
     ;;
   SR )
     do_SR_incl=true
-    do_STXS_incZ=true
+    do_SR_STXS_incZ=true
     ;;
   SR_incl )
     do_SR_incl=true
     ;;
-  STXS_incZ )
-    do_STXS_incZ=true
+  SR_STXS_incZ )
+    do_SR_STXS_incZ=true
     ;;
   all )
     do_CRttbar_incl=true
     do_CRttbar_bins=true
     do_SR_incl=true
-    do_STXS_incZ=true
+    do_SR_STXS_incZ=true
     ;;
   * )
     printf "Error: unexpected MODE value.\n"
@@ -137,7 +137,8 @@ esac
 #run on CRttbar inclusive
 if $do_CRttbar_incl; then
   echo "Running on CRttbar inclusive..."
-  cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}CRttbar.json ${BINW_CRTTBAR} CRttbar ${TAG}"
+  title="CRttbar"
+  cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}CRttbar.json ${BINW_CRTTBAR} ${title} ${TAG}"
   echo $cmd
   eval $cmd
 fi
@@ -145,8 +146,9 @@ fi
 #run on CRttbar pT bins
 if $do_CRttbar_bins; then
   echo "Running on CRttbar pT bins..."
+  title="CRttbar"
   for bin in '0' '1' '2'; do
-    cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}CRttbar_b${bin}.json ${BINW_CRTTBAR} CRttbar ${TAG} -b ${bin}"
+    cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}CRttbar_b${bin}.json ${BINW_CRTTBAR} ${title} ${TAG} -b ${bin}"
     echo $cmd
     eval $cmd
   done
@@ -155,26 +157,28 @@ fi
 #run on SR inclusive
 if $do_SR_incl; then
   echo "Running on SR inclusive..."
+  title="SR"
   for reg in 'lead' 'sublead'; do
-    cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}AsimovSR_${reg}.json ${BINW_SR} SR ${TAG} -c ${reg:0:1}"
+    cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}AsimovSR_${reg}.json ${BINW_SR} ${title} ${TAG} -c ${reg:0:1}"
     echo $cmd
     eval $cmd
   done
 fi
 
 #run on SR STXS incZ bins
-if $do_STXS_incZ; then
+if $do_SR_STXS_incZ; then
   echo "Running on SR STXS incZ bins..."
-   for reg in 'l' 's'; do
-     for bin in '0' '1' '2'; do
-        if [ "${reg}" == "l" ] && [ "${bin}" == "0" ]; then
-          continue
-        fi
-        cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}STXS_incZ_AsimovSR${reg^}${bin}.json ${BINW_SR} STXS_incZ ${TAG} -c ${reg} -b ${bin}"
-        echo $cmd
-        eval $cmd
-     done
-   done 
+  title="SR_STXS_incZ"
+  for reg in 'l' 's'; do
+    for bin in '0' '1' '2'; do
+      if [ "${reg}" == "l" ] && [ "${bin}" == "0" ]; then
+        continue
+      fi
+      cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}STXS_incZ_AsimovSR${reg^}${bin}.json ${BINW_SR} ${title} ${TAG} -c ${reg} -b ${bin}"
+      echo $cmd
+      eval $cmd
+    done
+  done 
 fi
 
 #return to base dir after condor submission

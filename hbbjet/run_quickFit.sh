@@ -15,11 +15,11 @@ usage() {
     printf "\n"
   #--mode MODE
   printf "\t%-20s\n" "--mode MODE"
-    printf "\t\t%s\n" "- MODE=Comb: run combined fit"
-    printf "\t\t%s\n" "- MODE=STXS_incZ: run STXS fit (inclusive Z)"
-    printf "\t\t%s\n" "- MODE=CRttbarOnly_incl: run CRttbar-only fit (inclusive)"
-    printf "\t\t%s\n" "- MODE=CRttbarOnly_bins: run CRttbar-only fit (pT bins)"
-    printf "\t\t%s\n" "- MODE=CRttbarOnly: run CRttbar-only fit (inclusive and pT bins)"
+    printf "\t\t%s\n" "- MODE=SR: run SR combined fit"
+    printf "\t\t%s\n" "- MODE=SR_STXS_incZ: run SR STXS fit (inclusive Z)"
+    printf "\t\t%s\n" "- MODE=CRttbar_incl: run CRttbar-only fit (inclusive)"
+    printf "\t\t%s\n" "- MODE=CRttbar_bins: run CRttbar-only fit (pT bins)"
+    printf "\t\t%s\n" "- MODE=CRttbar: run CRttbar-only fit (inclusive and pT bins)"
     printf "\t\t%s\n" "- MODE=all: run fits in all defined regions"
     printf "\n"
   #--fix FIX
@@ -122,34 +122,34 @@ else
 fi
 
 #initialise mode variables
-do_Comb=false
-do_STXS_incZ=false
-do_CRttbarOnly_incl=false
-do_CRttbarOnly_bins=false
+do_SR=false
+do_SR_STXS_incZ=false
+do_CRttbar_incl=false
+do_CRttbar_bins=false
 
 #run options
 case $MODE in
-  Comb )
-    do_Comb=true
+  SR )
+    do_SR=true
     ;;
-  STXS_incZ )
-    do_STXS_incZ=true
+  SR_STXS_incZ )
+    do_SR_STXS_incZ=true
     ;;
-  CRttbarOnly )
-    do_CRttbarOnly_incl=true
-    do_CRttbarOnly_bins=true
+  CRttbar )
+    do_CRttbar_incl=true
+    do_CRttbar_bins=true
     ;;
-  CRttbarOnly_incl )
-    do_CRttbarOnly_incl=true
+  CRttbar_incl )
+    do_CRttbar_incl=true
     ;;
-  CRttbarOnly_bins )
-    do_CRttbarOnly_bins=true
+  CRttbar_bins )
+    do_CRttbar_bins=true
     ;;
   all )
-    do_Comb=true
-    do_STXS_incZ=true
-    do_CRttbarOnly_incl=true
-    do_CRttbarOnly_bins=true
+    do_SR=true
+    do_SR_STXS_incZ=true
+    do_CRttbar_incl=true
+    do_CRttbar_bins=true
     ;;
   * )
     printf "Error: unexpected MODE value.\n"
@@ -179,9 +179,9 @@ fi
 #-------------------------------------------------------------------------------------------------
 #run quickFit
 
-#run combined fit
-if $do_Comb; then
-  title='Comb'
+#run SR combined fit
+if $do_SR; then
+  title='SR'
   mu_Higgs='1_-10_11'
   mu_Zboson='1_-3_5'
   mu_ttbar='1_0.5_1.5'
@@ -212,9 +212,9 @@ if $do_Comb; then
   done
 fi
 
-#run STXS incZ fit
-if $do_STXS_incZ; then
-  title='STXS_incZ'
+#run SR STXS fit (inclusive Z)
+if $do_SR_STXS_incZ; then
+  title='SR_STXS_incZ'
   mu_Higgs_b0='1'
   mu_Higgs_b1='1'
   mu_Higgs_b2='1'
