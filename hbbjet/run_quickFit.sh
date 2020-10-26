@@ -252,6 +252,62 @@ if $do_SR_STXS_incZ; then
   done
 fi
 
+# run CRttbar-only fit (inclusive)
+if $do_CRttbar_incl; then
+  title='CRttbar'
+  mu_ttbar='1_0_2'
+  minStrat='2'
+  minTolerance='1e-4'
+  hesse='1'
+  #set default minos value
+  if [ ! $MINOS ]; then
+    minos=3
+  else
+    minos=$MINOS
+  fi
+  #set default fix value
+  if [ ! $FIX ]; then
+    fix=""
+  else
+    fix="-n ${FIX}"
+  fi
+  for dtype in $DTYPE; do
+    outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
+    cmd="${condor_prefix}quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_ttbar=${mu_ttbar} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix}"
+    echo $cmd
+    eval $cmd
+  done
+fi
+
+# run CRttbar-only fit (pT bins)
+if $do_CRttbar_bins; then
+  mu_ttbar='1_0_2'
+  minStrat='2'
+  minTolerance='1e-4'
+  hesse='1'
+  #set default minos value
+  if [ ! $MINOS ]; then
+    minos=3
+  else
+    minos=$MINOS
+  fi
+  #set default fix value
+  if [ ! $FIX ]; then
+    fix=""
+  else
+    fix="-n ${FIX}"
+  fi
+  for dtype in $DTYPE; do
+    for bin in '0' '1' '2'; do
+      title="CRttbar_b${bin}"
+      outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
+      cmd="${condor_prefix}quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_ttbar=${mu_ttbar} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix}"
+      echo $cmd
+      eval $cmd
+    done
+  done
+fi
+
 #return to base dir after condor submission
 if $CONDOR; then
   cd ..
