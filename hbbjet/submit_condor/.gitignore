@@ -1,0 +1,5 @@
+job_*.sh
+hello_*.sub
+err/*
+log/*
+out/*
