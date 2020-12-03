@@ -1,13 +1,13 @@
 #!/bin/bash
-#title		:run_modelMaker.sh
+#title		    :run_modelMaker.sh
 #description	:Script for running modelMaker on the hbbjet analysis regions. 
-#author		:fcelli 
+#author		    :fcelli 
 
 SCRIPT=$(basename $0)
 
 #bin widths
 BINW_CRTTBAR=5
-BINW_SR=0.5
+BINW_SR=5
 
 usage() {
   printf "%s\n\n" "From within xmlfit_boostedhbb/:"

@@ -6,12 +6,12 @@
 SCRIPT=$(basename $0)
 
 # SRL
-nbins_SRL='280'
+nbins_SRL='28'
 m_min_SRL='70'
 m_max_SRL='210'
 
 # SRS
-nbins_SRS='270'
+nbins_SRS='27'
 m_min_SRS='75'
 m_max_SRS='210'
 
@@ -171,7 +171,7 @@ if $do_SR_STXS_incZ; then
   fi
   for dtype in $DTYPE; do
     #generate xml cards
-    cmd="python genxml/generate.py SR_STXS_incZ_l1__${TAG} SR_STXS_incZ_l2__${TAG} SR_STXS_incZ_s0__${TAG} SR_STXS_incZ_s1__${TAG} SR_STXS_incZ_s2__${TAG} CRttbar_0__${TAG} CRttbar_1__${TAG} CRttbar_2__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins 290 280 280 280 270 ${nbins_CRttbar} ${nbins_CRttbar} ${nbins_CRttbar} --fr '[65,210]' '[70,210]' '[70,210]' '[70,210]' '[75,210]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' --data ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} --qcd srl1 srl2_a srs0_a srs1 srs2 None None None --qcdsy 5e5 5e5 5e5 5e5 5e5 ${poi}"
+    cmd="python genxml/generate.py SR_STXS_incZ_l1__${TAG} SR_STXS_incZ_l2__${TAG} SR_STXS_incZ_s0__${TAG} SR_STXS_incZ_s1__${TAG} SR_STXS_incZ_s2__${TAG} CRttbar_0__${TAG} CRttbar_1__${TAG} CRttbar_2__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins 29 28 28 28 27 ${nbins_CRttbar} ${nbins_CRttbar} ${nbins_CRttbar} --fr '[65,210]' '[70,210]' '[70,210]' '[70,210]' '[75,210]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' '[${m_min_CRttbar},${m_max_CRttbar}]' --data ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} --qcd srl1 srl2_a srs0_a srs1 srs2 None None None --qcdsy 5e5 5e5 5e5 5e5 5e5 ${poi}"
     echo $cmd
     eval $cmd
     #read xml cards
