@@ -1,7 +1,7 @@
 #!/bin/bash
-#title          :setup_fitframe.sh
-#description    :Script for setting up the hbbjet fitting framework (quickFit). 
-#author         :fcelli
+#title          : setup_quickFit.sh
+#description    : Script for setting up the hbbjet fitting framework (quickFit). 
+#author         : fcelli
 
 export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
 alias setupATLAS='source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh'
