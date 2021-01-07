@@ -1,7 +1,7 @@
 #!/bin/bash
-#title          :run_quickFit.sh
-#description    :Script for running quickFit on the hbbjet analysis regions. 
-#author         :fcelli 
+#title          : run_quickFit.sh
+#description    : Script for running quickFit on the hbbjet analysis regions. 
+#author         : fcelli 
 
 SCRIPT=$(basename $0)
 
@@ -183,6 +183,7 @@ if $do_SR; then
   minStrat='1'
   minTolerance='1e-4'
   hesse='1'
+  extconst_massres_wz='0_0.106'
   # set default minos value
   if [ ! $MINOS ]; then
     minos=1
@@ -201,7 +202,7 @@ if $do_SR; then
       continue
     fi
     outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
-    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_Zboson=${mu_Zboson},mu_Higgs=${mu_Higgs},mu_ttbar=${mu_ttbar} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --NPExtGaussConstr alpha_JET_MassRes_WZ_comb=0_0.106"
+    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_Zboson=${mu_Zboson},mu_Higgs=${mu_Higgs},mu_ttbar=${mu_ttbar} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --NPExtGaussConstr alpha_JET_MassRes_WZ_comb=${extconst_massres_wz}"
     # --samplingRelTol -1
     # --printChi 1
     if ! $CONDOR; then
@@ -229,6 +230,9 @@ if $do_SR_STXS_incZ; then
   minStrat='1'
   minTolerance='1e-4'
   hesse='1'
+  extconst_massres_wz_0='0_0.105'
+  extconst_massres_wz_1='0_0.104'
+  extconst_massres_wz_2='0_0.185'
   # set default minos value
   if [ ! $MINOS ]; then
     minos=3
@@ -247,7 +251,7 @@ if $do_SR_STXS_incZ; then
       continue
     fi
     outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
-    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_Higgs_b0=${mu_Higgs_b0},mu_Higgs_b1=${mu_Higgs_b1},mu_Higgs_b2=${mu_Higgs_b2},mu_Zboson_pt0=${mu_Zboson_pt0},mu_Zboson_pt1=${mu_Zboson_pt1},mu_Zboson_pt2=${mu_Zboson_pt2},mu_Zboson_pt3=${mu_Zboson_pt3},mu_ttbar_b0=${mu_ttbar_b0},mu_ttbar_b1=${mu_ttbar_b1},mu_ttbar_b2=${mu_ttbar_b2} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix}"
+    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_Higgs_b0=${mu_Higgs_b0},mu_Higgs_b1=${mu_Higgs_b1},mu_Higgs_b2=${mu_Higgs_b2},mu_Zboson_pt0=${mu_Zboson_pt0},mu_Zboson_pt1=${mu_Zboson_pt1},mu_Zboson_pt2=${mu_Zboson_pt2},mu_Zboson_pt3=${mu_Zboson_pt3},mu_ttbar_b0=${mu_ttbar_b0},mu_ttbar_b1=${mu_ttbar_b1},mu_ttbar_b2=${mu_ttbar_b2} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --NPExtGaussConstr alpha_JET_MassRes_WZ_comb_0=${extconst_massres_wz_0},alpha_JET_MassRes_WZ_comb_1=${extconst_massres_wz_1},alpha_JET_MassRes_WZ_comb_2=${extconst_massres_wz_2}"
     if ! $CONDOR; then
       echo "Running job locally: ${cmd}"
       eval $cmd

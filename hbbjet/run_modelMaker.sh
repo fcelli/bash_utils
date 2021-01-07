@@ -1,13 +1,9 @@
 #!/bin/bash
-#title		    :run_modelMaker.sh
-#description	:Script for running modelMaker on the hbbjet analysis regions. 
-#author		    :fcelli 
+#title		    : run_modelMaker.sh
+#description	: Script for running modelMaker on the hbbjet analysis regions. 
+#author		    : fcelli 
 
 SCRIPT=$(basename $0)
-
-#bin widths
-BINW_CRTTBAR=5
-BINW_SR=5
 
 usage() {
   printf "%s\n\n" "From within xmlfit_boostedhbb/:"
@@ -138,7 +134,8 @@ esac
 if $do_CRttbar_incl; then
   echo "Running on CRttbar inclusive..."
   title="CRttbar"
-  cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}CRttbar.json ${BINW_CRTTBAR} ${title} ${TAG}"
+  binw="5"
+  cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}CRttbar.json ${binw} ${title} ${TAG}"
   echo $cmd
   eval $cmd
 fi
@@ -147,8 +144,9 @@ fi
 if $do_CRttbar_bins; then
   echo "Running on CRttbar pT bins..."
   title="CRttbar"
+  binw="5"
   for bin in '0' '1' '2'; do
-    cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}CRttbar_b${bin}.json ${BINW_CRTTBAR} ${title} ${TAG} -b ${bin}"
+    cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}CRttbar_b${bin}.json ${binw} ${title} ${TAG} -b ${bin}"
     echo $cmd
     eval $cmd
   done
@@ -158,8 +156,9 @@ fi
 if $do_SR_incl; then
   echo "Running on SR inclusive..."
   title="SR"
+  binw="5"
   for reg in 'lead' 'sublead'; do
-    cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}AsimovSR_${reg}.json ${BINW_SR} ${title} ${TAG} -c ${reg:0:1}"
+    cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}AsimovSR_${reg}.json ${binw} ${title} ${TAG} -c ${reg:0:1}"
     echo $cmd
     eval $cmd
   done
@@ -169,12 +168,13 @@ fi
 if $do_SR_STXS_incZ; then
   echo "Running on SR STXS incZ bins..."
   title="SR_STXS_incZ"
+  binw="5"
   for reg in 'l' 's'; do
     for bin in '0' '1' '2'; do
       if [ "${reg}" == "l" ] && [ "${bin}" == "0" ]; then
         continue
       fi
-      cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}STXS_incZ_AsimovSR${reg^}${bin}.json ${BINW_SR} ${title} ${TAG} -c ${reg} -b ${bin}"
+      cmd="${condor_prefix}python modelMaker/simple_auto.py ${JPATH}STXS_incZ_AsimovSR${reg^}${bin}.json ${binw} ${title} ${TAG} -c ${reg} -b ${bin}"
       echo $cmd
       eval $cmd
     done
