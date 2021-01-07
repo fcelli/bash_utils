@@ -6,7 +6,7 @@
 #options
 remoteHost="fcelli@lxplus.cern.ch"
 remoteDir="/eos/atlas/atlascerngroupdisk/phys-higgs/HSG5/dibjetISR_boosted/data_latest"
-localDir="/data/atlas/atlasdata/stankait/HbbISR/fitting/samples/data_latest"
+localDir="/data/atlas/atlasdata/celli/hbbjet/data_latest"
 
 #path where the script is stored
 baseDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
