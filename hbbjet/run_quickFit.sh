@@ -1,7 +1,7 @@
 #!/bin/bash
-#title          : run_quickFit.sh
-#description    : Script for running quickFit on the hbbjet analysis regions. 
-#author         : fcelli 
+# Title          : run_quickFit.sh
+# Description    : Script for running quickFit on the hbbjet analysis regions. 
+# Author         : fcelli 
 
 SCRIPT=$(basename $0)
 
@@ -15,11 +15,14 @@ usage() {
     printf "\n"
   # --mode MODE
   printf "\t%-20s\n" "--mode MODE"
-    printf "\t\t%s\n" "- MODE=SR: run SR combined fit"
-    printf "\t\t%s\n" "- MODE=SR_STXS_incZ: run SR STXS fit (inclusive Z)"
-    printf "\t\t%s\n" "- MODE=CRttbar_incl: run CRttbar-only fit (inclusive)"
-    printf "\t\t%s\n" "- MODE=CRttbar_bins: run CRttbar-only fit (pT bins)"
-    printf "\t\t%s\n" "- MODE=CRttbar: run CRttbar-only fit (inclusive and pT bins)"
+    printf "\t\t%s\n" "- MODE=SR_inc: run SR combined fit"
+    printf "\t\t%s\n" "- MODE=SR_STXS_Z_inc: run SR STXS Z(inclusive) fit"
+    printf "\t\t%s\n" "- MODE=SR_STXS_H_inc: run SR STXS H(inclusive) fit"
+    printf "\t\t%s\n" "- MODE=SR_STXS_H_ggF: run SR STXS H(ggF) fit"
+    printf "\t\t%s\n" "- MODE=SR: run all SR fits"
+    printf "\t\t%s\n" "- MODE=CRttbar_inc: run CRttbar (inclusive) fit"
+    printf "\t\t%s\n" "- MODE=CRttbar_bins: run CRttbar (pT bins) fit"
+    printf "\t\t%s\n" "- MODE=CRttbar: run CRttbar fit (inclusive and pT bins)"
     printf "\t\t%s\n" "- MODE=all: run fits in all defined regions"
     printf "\n"
   # --fix FIX
@@ -51,7 +54,7 @@ usage() {
     printf "\n"
 }
 
-# function for handling HTCondor job submission
+# Function for handling HTCondor job submission
 send_to_condor() {
   cmd=${1}
   echo "Submitting job to HTCondor: ${cmd}"
@@ -60,7 +63,7 @@ send_to_condor() {
   cd ..
 }
 
-# parse arguments
+# Parse arguments
 DTYPE='all'
 do_Nom=false
 CONDOR=false
@@ -104,13 +107,13 @@ while [ "$1" != "" ]; do
   shift
 done
 
-# mandatory arguments check
+# Mandatory arguments check
 if [ ! $TAG ] || [ ! $MODE ]; then
   usage
   exit 1
 fi
 
-# establish data type
+# Define data type
 if [ "$DTYPE" == 'all' ]; then
   DTYPE='data asimov'
 elif [ "$DTYPE" != 'asimov' ] && [ "$DTYPE" != 'data' ]; then
@@ -118,7 +121,7 @@ elif [ "$DTYPE" != 'asimov' ] && [ "$DTYPE" != 'data' ]; then
   exit 1
 fi
 
-# setup nominal run
+# Setup nominal run
 if $do_Nom; then
   nom="_nom"
   if [ ! $FIX ]; then
@@ -130,34 +133,50 @@ else
   nom=""
 fi
 
-# initialise mode variables
-do_SR=false
-do_SR_STXS_incZ=false
-do_CRttbar_incl=false
+# Initialize mode variables
+do_SR_inc=false
+do_SR_STXS_Z_inc=false
+do_SR_STXS_H_inc=false
+do_SR_STXS_H_ggF=false
+do_CRttbar_inc=false
 do_CRttbar_bins=false
 
-# run options
+# Run options
 case $MODE in
+  SR_inc )
+    do_SR_inc=true
+    ;;
+  SR_STXS_Z_inc )
+    do_SR_STXS_Z_inc=true
+    ;;
+  SR_STXS_H_inc )
+    do_SR_STXS_H_inc=true
+    ;;
+  SR_STXS_H_ggF )
+    do_SR_STXS_H_ggF=true
+    ;;
   SR )
-    do_SR=true
+    do_SR_inc=true
+    do_SR_STXS_Z_inc=true
+    do_SR_STXS_H_inc=true
+    do_SR_STXS_H_ggF=true
     ;;
-  SR_STXS_incZ )
-    do_SR_STXS_incZ=true
-    ;;
-  CRttbar )
-    do_CRttbar_incl=true
-    do_CRttbar_bins=true
-    ;;
-  CRttbar_incl )
-    do_CRttbar_incl=true
+  CRttbar_inc )
+    do_CRttbar_inc=true
     ;;
   CRttbar_bins )
     do_CRttbar_bins=true
     ;;
+  CRttbar )
+    do_CRttbar_inc=true
+    do_CRttbar_bins=true
+    ;;
   all )
-    do_SR=true
-    do_SR_STXS_incZ=true
-    do_CRttbar_incl=true
+    do_SR_inc=true
+    do_SR_STXS_Z_inc=true
+    do_SR_STXS_H_inc=true
+    do_SR_STXS_H_ggF=true
+    do_CRttbar_inc=true
     do_CRttbar_bins=true
     ;;
   * )
@@ -166,16 +185,16 @@ case $MODE in
 esac
 
 cd quickFit
-# create output directory
+# Create output directory
 if ! test -d output; then
   mkdir output
 fi
 
 #-------------------------------------------------------------------------------------------------
-# run quickFit
+# Run quickFit
 
-# run SR combined fit
-if $do_SR; then
+# Run SR combined fit
+if $do_SR_inc; then
   title='SR'
   mu_Higgs='1_-10_11'
   mu_Zboson='1_-3_5'
@@ -183,14 +202,14 @@ if $do_SR; then
   minStrat='1'
   minTolerance='1e-4'
   hesse='1'
-  extconst_massres_wz='0_0.106'
-  # set default minos value
+  extconst_massres_wz='0.056_0.122'
+  # Set default minos value
   if [ ! $MINOS ]; then
     minos=1
   else
     minos=$MINOS
   fi
-  # set default fix value
+  # Set default fix value
   if [ ! $FIX ]; then
     fix=""
   else
@@ -214,9 +233,9 @@ if $do_SR; then
   done
 fi
 
-# run SR STXS fit (inclusive Z)
-if $do_SR_STXS_incZ; then
-  title='SR_STXS_incZ'
+# Run SR STXS Z(inclusive) fit
+if $do_SR_STXS_Z_inc; then
+  title='SR_STXS_Z_inc'
   mu_Higgs_b0='1'
   mu_Higgs_b1='1'
   mu_Higgs_b2='1'
@@ -230,16 +249,16 @@ if $do_SR_STXS_incZ; then
   minStrat='1'
   minTolerance='1e-4'
   hesse='1'
-  extconst_massres_wz_0='0_0.105'
-  extconst_massres_wz_1='0_0.104'
-  extconst_massres_wz_2='0_0.185'
-  # set default minos value
+  extconst_massres_wz_0='0.127_0.100'
+  extconst_massres_wz_1='0.071_0.107'
+  extconst_massres_wz_2='-0.018_0.198'
+  # Set default minos value
   if [ ! $MINOS ]; then
     minos=3
   else
     minos=$MINOS
   fi
-  # set default fix value
+  # Set default fix value
   if [ ! $FIX ]; then
     fix=""
   else
@@ -261,20 +280,20 @@ if $do_SR_STXS_incZ; then
   done
 fi
 
-# run CRttbar-only fit (inclusive)
-if $do_CRttbar_incl; then
+# Run CRttbar (inclusive) fit 
+if $do_CRttbar_inc; then
   title='CRttbar'
   mu_ttbar='1_0_2'
   minStrat='2'
   minTolerance='1e-4'
   hesse='1'
-  # set default minos value
+  # Set default minos value
   if [ ! $MINOS ]; then
     minos=3
   else
     minos=$MINOS
   fi
-  # set default fix value
+  # Set default fix value
   if [ ! $FIX ]; then
     fix=""
   else
@@ -292,19 +311,19 @@ if $do_CRttbar_incl; then
   done
 fi
 
-# run CRttbar-only fit (pT bins)
+# Run CRttbar (pT bins) fit
 if $do_CRttbar_bins; then
   mu_ttbar='1_0_2'
   minStrat='2'
   minTolerance='1e-4'
   hesse='1'
-  # set default minos value
+  # Set default minos value
   if [ ! $MINOS ]; then
     minos=3
   else
     minos=$MINOS
   fi
-  # set default fix value
+  # Set default fix value
   if [ ! $FIX ]; then
     fix=""
   else
@@ -325,8 +344,8 @@ if $do_CRttbar_bins; then
   done
 fi
 
-# return to base directory
+# Return to base directory
 cd ..
 
-# unset variables after use
+# Unset variables after use
 unset TAG MODE FIX MINOS
