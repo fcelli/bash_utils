@@ -202,7 +202,7 @@ if $do_SR_inc; then
   minStrat='1'
   minTolerance='1e-4'
   hesse='1'
-  extconst_massres_wz='0.056_0.122'
+  extconst_massres_wz='0.056_0.158'
   # Set default minos value
   if [ ! $MINOS ]; then
     minos=1
@@ -249,9 +249,9 @@ if $do_SR_STXS_Z_inc; then
   minStrat='1'
   minTolerance='1e-4'
   hesse='1'
-  extconst_massres_wz_0='0.127_0.100'
-  extconst_massres_wz_1='0.071_0.107'
-  extconst_massres_wz_2='-0.018_0.198'
+  extconst_massres_wz_0='0.127_0.141'
+  extconst_massres_wz_1='0.071_0.146'
+  extconst_massres_wz_2='-0.018_0.212'
   # Set default minos value
   if [ ! $MINOS ]; then
     minos=3
