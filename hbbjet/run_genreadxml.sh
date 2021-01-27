@@ -141,21 +141,35 @@ esac
 #---------------------------------------------------------------------------------------------------------
 # Run genreadxml
 
+# Bins and limits
+# SRL
+nbins_l='28' m_min_l='70' m_max_l='210' yield_l='5.9145e5'
+range_l="'[${m_min_l},${m_max_l}]'"
+# SRS
+nbins_s='27' m_min_s='75' m_max_s='210' yield_s='5.3004e5'
+range_s="'[${m_min_s},${m_max_s}]'"
+# SRL1
+nbins_l1='28' m_min_l1='70' m_max_l1='210' yield_l1='5.0797e5'
+range_l1="'[${m_min_l1},${m_max_l1}]'"
+# SRL2
+nbins_l2='27' m_min_l2='75' m_max_l2='210' yield_l2='7.2817e4'
+range_l2="'[${m_min_l2},${m_max_l2}]'"
+# SRS0
+nbins_s0='27' m_min_s0='75' m_max_s0='210' yield_s0='1.5780e5'
+range_s0="'[${m_min_s0},${m_max_s0}]'"
+# SRS1
+nbins_s1='28' m_min_s1='70' m_max_s1='210' yield_s1='3.4024e5'
+range_s1="'[${m_min_s1},${m_max_s1}]'"
+# SRS2
+nbins_s2='27' m_min_s2='75' m_max_s2='210' yield_s2='4.8390e4'
+range_s2="'[${m_min_s2},${m_max_s2}]'"
+# CRttbar
+nbins_cr='12' m_min_cr='140' m_max_cr='200'
+range_cr="'[${m_min_cr},${m_max_cr}]'"
+
 # Generate and read SR xml cards
 if $do_SR_inc; then
   title='SR'
-  # SRL
-  nbins_l='28'
-  m_min_l='70'
-  m_max_l='210'
-  # SRS
-  nbins_s='27'
-  m_min_s='75'
-  m_max_s='210'
-  # CRttbar
-  nbins_crttbar='12'
-  m_min_crttbar='140'
-  m_max_crttbar='200'
   if [ ! $POI ]; then
     # Set default poi value
     poi=""
@@ -164,7 +178,7 @@ if $do_SR_inc; then
   fi
   for dtype in $DTYPE; do
     # Generate xml cards
-    cmd="python genxml/generate.py SR_l__${TAG} SR_s__${TAG} CRttbar__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins ${nbins_l} ${nbins_s} ${nbins_crttbar} --fr '[${m_min_l},${m_max_l}]' '[${m_min_s},${m_max_s}]' '[${m_min_crttbar},${m_max_crttbar}]' --data ${dtype} ${dtype} ${dtype} --qcd srl srs None ${poi}"
+    cmd="python genxml/generate.py SR_l__${TAG} SR_s__${TAG} CRttbar__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins ${nbins_l} ${nbins_s} ${nbins_cr} --fr ${range_l} ${range_s} ${range_cr} --data ${dtype} ${dtype} ${dtype} --qcd srl srs None --qcdsy ${yield_l} ${yield_s} ${poi}"
     echo $cmd
     eval $cmd
     # Read xml cards
@@ -179,39 +193,38 @@ fi
 # Generate and read SR STXS Z(inclusive) xml cards
 if $do_SR_STXS_Z_inc; then
   title='SR_STXS_Z_inc'
-  # SRL_1
-  nbins_l1='29'
-  m_min_l1='65'
-  m_max_l1='210'
-  # SRL_2
-  nbins_l2='28'
-  m_min_l2='70'
-  m_max_l2='210'
-  # SRS_0
-  nbins_s0='28'
-  m_min_s0='70'
-  m_max_s0='210'
-  # SRS_1
-  nbins_s1='28'
-  m_min_s1='70'
-  m_max_s1='210'
-  # SRS_2
-  nbins_s2='27'
-  m_min_s2='75'
-  m_max_s2='210'
-  # CRttbar
-  nbins_crttbar='12'
-  m_min_crttbar='140'
-  m_max_crttbar='200'
   if [ ! $POI ]; then
-    #set default poi value
+    # Set default poi value
     poi=""
   else
     poi="--poi ${POI}"
   fi
   for dtype in $DTYPE; do
     # Generate xml cards
-    cmd="python genxml/generate.py SR_STXS_Z_inc_l1__${TAG} SR_STXS_Z_inc_l2__${TAG} SR_STXS_Z_inc_s0__${TAG} SR_STXS_Z_inc_s1__${TAG} SR_STXS_Z_inc_s2__${TAG} CRttbar_0__${TAG} CRttbar_1__${TAG} CRttbar_2__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins ${nbins_l1} ${nbins_l2} ${nbins_s0} ${nbins_s1} ${nbins_s2} ${nbins_crttbar} ${nbins_crttbar} ${nbins_crttbar} --fr '[${m_min_l1},${m_max_l1}]' '[${m_min_l2},${m_max_l2}]' '[${m_min_s0},${m_max_s0}]' '[${m_min_s1},${m_max_s1}]' '[${m_min_s2},${m_max_s2}]' '[${m_min_crttbar},${m_max_crttbar}]' '[${m_min_crttbar},${m_max_crttbar}]' '[${m_min_crttbar},${m_max_crttbar}]' --data ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} --qcd srl1 srl2 srs0 srs1 srs2 None None None --qcdsy 5e5 5e5 5e5 5e5 5e5 ${poi}"
+    cmd="python genxml/generate.py SR_STXS_Z_inc_l1__${TAG} SR_STXS_Z_inc_l2__${TAG} SR_STXS_Z_inc_s0__${TAG} SR_STXS_Z_inc_s1__${TAG} SR_STXS_Z_inc_s2__${TAG} CRttbar_0__${TAG} CRttbar_1__${TAG} CRttbar_2__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins ${nbins_l1} ${nbins_l2} ${nbins_s0} ${nbins_s1} ${nbins_s2} ${nbins_cr} ${nbins_cr} ${nbins_cr} --fr ${range_l1} ${range_l2} ${range_s0} ${range_s1} ${range_s2} ${range_cr} ${range_cr} ${range_cr} --data ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} --qcd srl1 srl2 srs0 srs1 srs2 None None None --qcdsy ${yield_l1} ${yield_l2} ${yield_s0} ${yield_s1} ${yield_s2} ${poi}"
+    echo $cmd
+    eval $cmd
+    # Read xml cards
+    cd xmlAnaWSBuilder
+    cmd="./exe/XMLReader -x config/hbbj/${title}_${dtype}_${TAG}/${title}.xml"
+    echo $cmd
+    eval $cmd
+    cd ..
+  done
+fi
+
+# Generate and read SR STXS H(inclusive) xml cards
+if $do_SR_STXS_H_inc; then
+  title='SR_STXS_H_inc'
+  if [ ! $POI ]; then
+    # Set default poi value
+    poi=""
+  else
+    poi="--poi ${POI}"
+  fi
+  for dtype in $DTYPE; do
+    # Generate xml cards
+    cmd="python genxml/generate.py SR_STXS_H_inc_l1__${TAG} SR_STXS_H_inc_l2__${TAG} SR_STXS_H_inc_s0__${TAG} SR_STXS_H_inc_s1__${TAG} SR_STXS_H_inc_s2__${TAG} CRttbar_0__${TAG} CRttbar_1__${TAG} CRttbar_2__${TAG} --title ${title} --tag ${dtype}_${TAG} --bins ${nbins_l1} ${nbins_l2} ${nbins_s0} ${nbins_s1} ${nbins_s2} ${nbins_cr} ${nbins_cr} ${nbins_cr} --fr ${range_l1} ${range_l2} ${range_s0} ${range_s1} ${range_s2} ${range_cr} ${range_cr} ${range_cr} --data ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} ${dtype} --qcd srl1 srl2 srs0 srs1 srs2 None None None --qcdsy ${yield_l1} ${yield_l2} ${yield_s0} ${yield_s1} ${yield_s2} ${poi}"
     echo $cmd
     eval $cmd
     # Read xml cards
@@ -226,9 +239,6 @@ fi
 # Generate and read CRttbar (inclusive) xml cards
 if $do_CRttbar_inc; then
   title='CRttbar'
-  nbins='12'
-  m_min='140'
-  m_max='200'
   if [ ! $POI ]; then
     # Set default poi value
     poi="--poi mu_ttbar"
@@ -237,7 +247,7 @@ if $do_CRttbar_inc; then
   fi
   for dtype in $DTYPE; do
     # Generate xml cards
-    cmd="python genxml/generate.py CRttbar__${TAG} --title ${title} --tag ${dtype}_${TAG} --data ${dtype} --bins ${nbins} --fr '[${m_min},${m_max}]' ${poi}"
+    cmd="python genxml/generate.py CRttbar__${TAG} --title ${title} --tag ${dtype}_${TAG} --data ${dtype} --bins ${nbins_cr} --fr ${range_cr} ${poi}"
     echo $cmd
     eval $cmd
     # Read xml cards
@@ -253,9 +263,6 @@ fi
 if $do_CRttbar_bins; then
   for bin in '0' '1' '2'; do
     title="CRttbar_b${bin}"
-    nbins='12'
-    m_min='140'
-    m_max='200'
     if [ ! $POI ]; then
       # Set default poi value
       poi="--poi mu_ttbar_b${bin}"
@@ -264,7 +271,7 @@ if $do_CRttbar_bins; then
     fi
     for dtype in $DTYPE; do
       # Generate xml cards
-      cmd="python genxml/generate.py CRttbar_${bin}__${TAG} --title ${title} --tag ${dtype}_${TAG} --data ${dtype} --bins ${nbins} --fr '[${m_min},${m_max}]' ${poi}"
+      cmd="python genxml/generate.py CRttbar_${bin}__${TAG} --title ${title} --tag ${dtype}_${TAG} --data ${dtype} --bins ${nbins_cr} --fr ${range_cr} ${poi}"
       echo $cmd
       eval $cmd
       # Read xml cards
