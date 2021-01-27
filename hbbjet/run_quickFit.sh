@@ -274,6 +274,49 @@ if $do_SR_STXS_Z_inc; then
   done
 fi
 
+# Run SR STXS H(inclusive) fit
+if $do_SR_STXS_H_inc; then
+  title='SR_STXS_H_inc'
+  mu_Higgs_pt0='1'
+  mu_Higgs_pt1='1_-10_11'
+  mu_Higgs_pt2='1_-10_11'
+  mu_Higgs_pt3='1_-10_11'
+  mu_Zboson_b0='1_-4_5'
+  mu_Zboson_b1='1_-1_3'
+  mu_Zboson_b2='1_-3_4'
+  mu_ttbar_b0='1_0.5_1.5'
+  mu_ttbar_b1='1_0.5_1.5'
+  mu_ttbar_b2='1_0.5_1.5'
+  minStrat='1'
+  minTolerance='1e-4'
+  hesse='1'
+  extconst_massres_wz_0='0.127_0.141'
+  extconst_massres_wz_1='0.071_0.146'
+  extconst_massres_wz_2='-0.018_0.212'
+  # Set default minos value
+  if [ ! $MINOS ]; then
+    minos=3
+  else
+    minos=$MINOS
+  fi
+  # Set default fix value
+  if [ ! $FIX ]; then
+    fix=""
+  else
+    fix="-n ${FIX}"
+  fi
+  for dtype in $DTYPE; do
+    outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
+    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_Higgs_pt0=${mu_Higgs_pt0},mu_Higgs_pt1=${mu_Higgs_pt1},mu_Higgs_pt2=${mu_Higgs_pt2},mu_Higgs_pt3=${mu_Higgs_pt3},mu_Zboson_b0=${mu_Zboson_b0},mu_Zboson_b1=${mu_Zboson_b1},mu_Zboson_b2=${mu_Zboson_b2},mu_ttbar_b0=${mu_ttbar_b0},mu_ttbar_b1=${mu_ttbar_b1},mu_ttbar_b2=${mu_ttbar_b2} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --NPExtGaussConstr alpha_JET_MassRes_WZ_comb_0=${extconst_massres_wz_0},alpha_JET_MassRes_WZ_comb_1=${extconst_massres_wz_1},alpha_JET_MassRes_WZ_comb_2=${extconst_massres_wz_2}"
+    if ! $CONDOR; then
+      echo "Running job locally: ${cmd}"
+      eval $cmd
+    else
+      send_to_condor "\"$cmd\""
+    fi
+  done
+fi
+
 # Run CRttbar (inclusive) fit 
 if $do_CRttbar_inc; then
   title='CRttbar'
