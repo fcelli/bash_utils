@@ -196,13 +196,32 @@ fi
 # Run SR combined fit
 if $do_SR_inc; then
   title='SR'
-  mu_Higgs='1_-10_11'
-  mu_Zboson='1_-3_5'
-  mu_ttbar='1_0.5_1.5'
+  # Signal strengths
+  mu_Higgs='-0.133518_-20_20'
+  mu_Zboson='1.34684_-2_4'
+  mu_ttbar='0.806336_0.5_1.5'
+  # QCD parameters (SRL)
+  yield_QCD_srl='591979_5e5_8e5'
+  c_srl='-0.657705_-1_0'
+  d_srl='-0.0640925_-5_5'
+  e_srl='-0.144159_-5_5'
+  f_srl='0.041925_-10_10'
+  g_srl='0.0804319_-10_10'
+  h_srl='0'
+  # QCD parameters (SRS)
+  yield_QCD_srs='530411_4e5_7e5'
+  c_srs='-0.741208_-1_0'
+  d_srs='-0.170478_-5_5'
+  e_srs='-0.0517586_-5_5'
+  f_srs='0.0192332_-10_10'
+  g_srs='-0.0097926_-10_10'
+  h_srs='0'
+  # Gaussian external constraints
+  extconst_massres_wz='0.054_0.146'
+  # Fit options
   minStrat='1'
-  minTolerance='1e-4'
+  minTolerance='1e-5'
   hesse='1'
-  extconst_massres_wz='0.056_0.158'
   # Set default minos value
   if [ ! $MINOS ]; then
     minos=1
@@ -220,8 +239,9 @@ if $do_SR_inc; then
       echo "WARNING: this region is still blinded. Skipping..."
       continue
     fi
+    p_opt="mu_Zboson=${mu_Zboson},mu_Higgs=${mu_Higgs},mu_ttbar=${mu_ttbar},yield_QCD_srl=${yield_QCD_srl},c_srl=${c_srl},d_srl=${d_srl},e_srl=${e_srl},f_srl=${f_srl},g_srl=${g_srl},h_srl=${h_srl},yield_QCD_srs=${yield_QCD_srs},c_srs=${c_srs},d_srs=${d_srs},e_srs=${e_srs},f_srs=${f_srs},g_srs=${g_srs},h_srs=${h_srs}"
     outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
-    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_Zboson=${mu_Zboson},mu_Higgs=${mu_Higgs},mu_ttbar=${mu_ttbar} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --NPExtGaussConstr alpha_JET_MassRes_WZ_comb=${extconst_massres_wz}"
+    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p ${p_opt} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --printChi 1 --NPExtGaussConstr alpha_JET_MassRes_WZ_comb=${extconst_massres_wz}"
     if ! $CONDOR; then
       echo "Running job locally: ${cmd}"
       eval $cmd
@@ -277,22 +297,65 @@ fi
 # Run SR STXS H(inclusive) fit
 if $do_SR_STXS_H_inc; then
   title='SR_STXS_H_inc'
+  # Signal strengths
   mu_Higgs_pt0='1'
-  mu_Higgs_pt1='1_-10_11'
-  mu_Higgs_pt2='1_-10_11'
-  mu_Higgs_pt3='1_-10_11'
-  mu_Zboson_b0='1_-4_5'
-  mu_Zboson_b1='1_-1_3'
-  mu_Zboson_b2='1_-3_4'
-  mu_ttbar_b0='1_0.5_1.5'
-  mu_ttbar_b1='1_0.5_1.5'
-  mu_ttbar_b2='1_0.5_1.5'
-  minStrat='1'
-  minTolerance='1e-4'
-  hesse='1'
+  mu_Higgs_pt1='1_-50_50'
+  mu_Higgs_pt2='1_-20_20'
+  mu_Higgs_pt3='1_-20_20'
+  mu_Zboson_b0='1_-10_10'
+  mu_Zboson_b1='1_-3_5'
+  mu_Zboson_b2='1_-10_10'
+  mu_ttbar_b0='1_-2_4'
+  mu_ttbar_b1='1_-1_3'
+  mu_ttbar_b2='1_-2_4'
+  # QCD parameters (SRL1)
+  yield_QCD_srl1='509078_4e5_7e5'
+  c_srl1='-0.663971_-5_5'
+  d_srl1='-0.101571_-5_5'
+  e_srl1='-0.160658_-5_5'
+  f_srl1='0.0546747_-10_10'
+  g_srl1='0.0803174_-10_10'
+  h_srl1='0'
+  # QCD parameters (SRL2)
+  yield_QCD_srl2='73120.7_5e4_9e4'
+  c_srl2='-0.564274_-5_5'
+  d_srl2='0.137865_-5_5'
+  e_srl2='-0.0365133_-5_5'
+  f_srl2='-0.0185633_-10_10'
+  g_srl2='0'
+  h_srl2='0'
+  # QCD parameters (SRS0)
+  yield_QCD_srs0='170304_7e4_2e5'
+  c_srs0='-1.18605_-5_5'
+  d_srs0='-0.4745_-5_5'
+  e_srs0='-0.0647228_-5_5'
+  f_srs0='-0.287929_-10_10'
+  g_srs0='-0.276652_-5_5'
+  h_srs0='0'
+  # QCD parameters (SRS1)
+  yield_QCD_srs1='340819_1e5_6e5'
+  c_srs1='-0.564257_-1_0'
+  d_srs1='-0.109349_-5_5'
+  e_srs1='-0.0916096_-5_5'
+  f_srs1='0.053006_-10_10'
+  g_srs1='0'
+  h_srs1='0'
+  # QCD parameters (SRS2)
+  yield_QCD_srs2='47841_1e4_1e5'
+  c_srs2='-0.4_-5_5'
+  d_srs2='0.198449_-5_5'
+  e_srs2='-0.0964363_-5_5'
+  f_srs2='-0.129441_-10_10'
+  g_srs2='0_-10_10'
+  h_srs2='0'
+  # Gaussian external constraints
   extconst_massres_wz_0='0.127_0.141'
   extconst_massres_wz_1='0.071_0.146'
   extconst_massres_wz_2='-0.018_0.212'
+  # Fit options
+  minStrat='1'
+  minTolerance='1e-4'
+  hesse='1'
   # Set default minos value
   if [ ! $MINOS ]; then
     minos=3
@@ -306,8 +369,9 @@ if $do_SR_STXS_H_inc; then
     fix="-n ${FIX}"
   fi
   for dtype in $DTYPE; do
+    p_opt="mu_Higgs_pt0=${mu_Higgs_pt0},mu_Higgs_pt1=${mu_Higgs_pt1},mu_Higgs_pt2=${mu_Higgs_pt2},mu_Higgs_pt3=${mu_Higgs_pt3},mu_Zboson_b0=${mu_Zboson_b0},mu_Zboson_b1=${mu_Zboson_b1},mu_Zboson_b2=${mu_Zboson_b2},mu_ttbar_b0=${mu_ttbar_b0},mu_ttbar_b1=${mu_ttbar_b1},mu_ttbar_b2=${mu_ttbar_b2},yield_QCD_srl1=${yield_QCD_srl1},c_srl1=${c_srl1},d_srl1=${d_srl1},e_srl1=${e_srl1},f_srl1=${f_srl1},g_srl1=${g_srl1},h_srl1=${h_srl1},yield_QCD_srl2=${yield_QCD_srl2},c_srl2=${c_srl2},d_srl2=${d_srl2},e_srl2=${e_srl2},f_srl2=${f_srl2},g_srl2=${g_srl2},h_srl2=${h_srl2},yield_QCD_srs0=${yield_QCD_srs0},c_srs0=${c_srs0},d_srs0=${d_srs0},e_srs0=${e_srs0},f_srs0=${f_srs0},g_srs0=${g_srs0},h_srs0=${h_srs0},yield_QCD_srs1=${yield_QCD_srs1},c_srs1=${c_srs1},d_srs1=${d_srs1},e_srs1=${e_srs1},f_srs1=${f_srs1},g_srs1=${g_srs1},h_srs1=${h_srs1},yield_QCD_srs2=${yield_QCD_srs2},c_srs2=${c_srs2},d_srs2=${d_srs2},e_srs2=${e_srs2},f_srs2=${f_srs2},g_srs2=${g_srs2},h_srs2=${h_srs2}"
     outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
-    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_Higgs_pt0=${mu_Higgs_pt0},mu_Higgs_pt1=${mu_Higgs_pt1},mu_Higgs_pt2=${mu_Higgs_pt2},mu_Higgs_pt3=${mu_Higgs_pt3},mu_Zboson_b0=${mu_Zboson_b0},mu_Zboson_b1=${mu_Zboson_b1},mu_Zboson_b2=${mu_Zboson_b2},mu_ttbar_b0=${mu_ttbar_b0},mu_ttbar_b1=${mu_ttbar_b1},mu_ttbar_b2=${mu_ttbar_b2} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --NPExtGaussConstr alpha_JET_MassRes_WZ_comb_0=${extconst_massres_wz_0},alpha_JET_MassRes_WZ_comb_1=${extconst_massres_wz_1},alpha_JET_MassRes_WZ_comb_2=${extconst_massres_wz_2}"
+    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p ${p_opt} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --printChi 1 --NPExtGaussConstr alpha_JET_MassRes_WZ_comb_0=${extconst_massres_wz_0},alpha_JET_MassRes_WZ_comb_1=${extconst_massres_wz_1},alpha_JET_MassRes_WZ_comb_2=${extconst_massres_wz_2}"
     if ! $CONDOR; then
       echo "Running job locally: ${cmd}"
       eval $cmd
