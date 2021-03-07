@@ -10,9 +10,6 @@ setupATLAS
 
 lsetup git
 
-#lsetup "views LCG_97_ATLAS_1 x86_64-centos7-gcc8-opt"
-#source setup.sh
-
 cd quickFit
 source setup_lxplus.sh
 cd ..

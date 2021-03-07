@@ -143,25 +143,25 @@ esac
 
 # Bins and limits
 # SRL
-nbins_l='28' m_min_l='70' m_max_l='210' yield_l='5.9145e5'
+nbins_l='28' m_min_l='70' m_max_l='210' yield_l='5.91979e+05'
 range_l="'[${m_min_l},${m_max_l}]'"
 # SRS
-nbins_s='27' m_min_s='75' m_max_s='210' yield_s='5.3004e5'
+nbins_s='27' m_min_s='75' m_max_s='210' yield_s='5.30411e+05'
 range_s="'[${m_min_s},${m_max_s}]'"
 # SRL1
-nbins_l1='28' m_min_l1='70' m_max_l1='210' yield_l1='5.0797e5'
+nbins_l1='28' m_min_l1='70' m_max_l1='210' yield_l1='5.09078e+05'
 range_l1="'[${m_min_l1},${m_max_l1}]'"
 # SRL2
-nbins_l2='27' m_min_l2='75' m_max_l2='210' yield_l2='7.2817e4'
+nbins_l2='27' m_min_l2='75' m_max_l2='210' yield_l2='7.31207e+04'
 range_l2="'[${m_min_l2},${m_max_l2}]'"
 # SRS0
-nbins_s0='27' m_min_s0='75' m_max_s0='210' yield_s0='1.5780e5'
+nbins_s0='27' m_min_s0='75' m_max_s0='210' yield_s0='1.70304e+05'
 range_s0="'[${m_min_s0},${m_max_s0}]'"
 # SRS1
-nbins_s1='28' m_min_s1='70' m_max_s1='210' yield_s1='3.4024e5'
+nbins_s1='28' m_min_s1='70' m_max_s1='210' yield_s1='3.40819e+05'
 range_s1="'[${m_min_s1},${m_max_s1}]'"
 # SRS2
-nbins_s2='27' m_min_s2='75' m_max_s2='210' yield_s2='4.8390e4'
+nbins_s2='27' m_min_s2='75' m_max_s2='210' yield_s2='4.7841e+04'
 range_s2="'[${m_min_s2},${m_max_s2}]'"
 # CRttbar
 nbins_cr='12' m_min_cr='140' m_max_cr='200'
@@ -183,7 +183,7 @@ if $do_SR_inc; then
     eval $cmd
     # Read xml cards
     cd xmlAnaWSBuilder
-    cmd="./exe/XMLReader -x config/hbbj/${title}_${dtype}_${TAG}/${title}.xml" 
+    cmd="./exe/XMLReader -x config/hbbj/${title}_${dtype}_${TAG}/${title}.xml"
     echo $cmd
     eval $cmd
     cd ..
