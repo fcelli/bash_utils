@@ -36,7 +36,8 @@ usage() {
     printf "\t\t%s\n" "- DTYPE=all: run on data and asimov"
     printf "\n"
   # --minos MINOS
-  printf "\t%-20s\n" "--minos MINOS"
+  printf "\t%-20s\n" "--minos MINOS[=0]"
+    printf "\t\t%s\n" "- MINOS=0: do not run scans"
     printf "\t\t%s\n" "- MINOS=1: run scans only on parameters of interest"
     printf "\t\t%s\n" "- MINOS=3: run scans on all nuisance parameters"
     printf "\n"
@@ -67,7 +68,8 @@ send_to_condor() {
 DTYPE='all'
 do_Nom=false
 CONDOR=false
-unset TAG MODE FIX MINOS
+MINOS='0'
+unset TAG MODE FIX
 while [ "$1" != "" ]; do
   case $1 in
     --tag )
@@ -117,7 +119,13 @@ fi
 if [ "$DTYPE" == 'all' ]; then
   DTYPE='data asimov'
 elif [ "$DTYPE" != 'asimov' ] && [ "$DTYPE" != 'data' ]; then
-  echo "Error: unexpected DTYPE value."
+  echo "Error: unexpected dtype argument."
+  exit 1
+fi
+
+# Check minos argument
+if [ "$MINOS" != '0' ] && [ "$MINOS" != '1' ] && [ "$MINOS" != '3' ]; then
+  echo "Error: unexpected minos argument."
   exit 1
 fi
 
@@ -222,23 +230,19 @@ if $do_SR_inc; then
   minStrat='1'
   minTolerance='1e-5'
   hesse='1'
-  # Set default minos value
-  if [ ! $MINOS ]; then
-    minos=1
-  else
-    minos=$MINOS
-  fi
   # Set default fix value
   if [ ! $FIX ]; then
     fix=""
   else
     fix="-n ${FIX}"
   fi
-  for dtype in $DTYPE; do   
+  for dtype in $DTYPE; do
+    if [ $dtype == 'asimov' ]; then
+      extconst_massres_wz='0_0.146'
+    fi
     p_opt="mu_Higgs=${mu_Higgs},mu_Zboson=${mu_Zboson},mu_ttbar=${mu_ttbar},yield_QCD_srl=${yield_QCD_srl},c_srl=${c_srl},d_srl=${d_srl},e_srl=${e_srl},f_srl=${f_srl},g_srl=${g_srl},h_srl=${h_srl},yield_QCD_srs=${yield_QCD_srs},c_srs=${c_srs},d_srs=${d_srs},e_srs=${e_srs},f_srs=${f_srs},g_srs=${g_srs},h_srs=${h_srs}"
-    #p_opt="mu_Zboson=${mu_Zboson},mu_Higgs=${mu_Higgs},mu_ttbar=${mu_ttbar}"
-    outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
-    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p ${p_opt} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --printChi 1 --NPExtGaussConstr alpha_JET_MassRes_WZ_comb=${extconst_massres_wz}"
+    outname="${title}_${dtype}_${TAG}_minos${MINOS}${nom}.root"
+    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p ${p_opt} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${MINOS} ${fix} --printChi 1 --NPExtGaussConstr alpha_JET_MassRes_WZ_comb=${extconst_massres_wz}"
     if ! $CONDOR; then
       echo "Running job locally: ${cmd}"
       eval $cmd
@@ -310,12 +314,6 @@ if $do_SR_STXS_Z_inc; then
   minStrat='1'
   minTolerance='1e-5'
   hesse='1'
-  # Set default minos value
-  if [ ! $MINOS ]; then
-    minos=3
-  else
-    minos=$MINOS
-  fi
   # Set default fix value
   if [ ! $FIX ]; then
     fix=""
@@ -323,9 +321,14 @@ if $do_SR_STXS_Z_inc; then
     fix="-n ${FIX}"
   fi
   for dtype in $DTYPE; do
+    if [ $dtype == 'asimov' ]; then
+      extconst_massres_wz_0='0_0.141'
+      extconst_massres_wz_1='0_0.146'
+      extconst_massres_wz_2='0_0.212'
+    fi
     p_opt="mu_Higgs_b0=${mu_Higgs_b0},mu_Higgs_b1=${mu_Higgs_b1},mu_Higgs_b2=${mu_Higgs_b2},mu_Zboson_pt0=${mu_Zboson_pt0},mu_Zboson_pt1=${mu_Zboson_pt1},mu_Zboson_pt2=${mu_Zboson_pt2},mu_Zboson_pt3=${mu_Zboson_pt3},mu_ttbar_b0=${mu_ttbar_b0},mu_ttbar_b1=${mu_ttbar_b1},mu_ttbar_b2=${mu_ttbar_b2},yield_QCD_srl1=${yield_QCD_srl1},c_srl1=${c_srl1},d_srl1=${d_srl1},e_srl1=${e_srl1},f_srl1=${f_srl1},g_srl1=${g_srl1},h_srl1=${h_srl1},yield_QCD_srl2=${yield_QCD_srl2},c_srl2=${c_srl2},d_srl2=${d_srl2},e_srl2=${e_srl2},f_srl2=${f_srl2},g_srl2=${g_srl2},h_srl2=${h_srl2},yield_QCD_srs0=${yield_QCD_srs0},c_srs0=${c_srs0},d_srs0=${d_srs0},e_srs0=${e_srs0},f_srs0=${f_srs0},g_srs0=${g_srs0},h_srs0=${h_srs0},yield_QCD_srs1=${yield_QCD_srs1},c_srs1=${c_srs1},d_srs1=${d_srs1},e_srs1=${e_srs1},f_srs1=${f_srs1},g_srs1=${g_srs1},h_srs1=${h_srs1},yield_QCD_srs2=${yield_QCD_srs2},c_srs2=${c_srs2},d_srs2=${d_srs2},e_srs2=${e_srs2},f_srs2=${f_srs2},g_srs2=${g_srs2},h_srs2=${h_srs2}"
-    outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
-    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p ${p_opt} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --NPExtGaussConstr alpha_JET_MassRes_WZ_comb_0=${extconst_massres_wz_0},alpha_JET_MassRes_WZ_comb_1=${extconst_massres_wz_1},alpha_JET_MassRes_WZ_comb_2=${extconst_massres_wz_2}"
+    outname="${title}_${dtype}_${TAG}_minos${MINOS}${nom}.root"
+    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p ${p_opt} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${MINOS} ${fix} --NPExtGaussConstr alpha_JET_MassRes_WZ_comb_0=${extconst_massres_wz_0},alpha_JET_MassRes_WZ_comb_1=${extconst_massres_wz_1},alpha_JET_MassRes_WZ_comb_2=${extconst_massres_wz_2}"
     if ! $CONDOR; then
       echo "Running job locally: ${cmd}"
       eval $cmd
@@ -397,12 +400,6 @@ if $do_SR_STXS_H_inc; then
   minStrat='1'
   minTolerance='1e-5'
   hesse='1'
-  # Set default minos value
-  if [ ! $MINOS ]; then
-    minos=3
-  else
-    minos=$MINOS
-  fi
   # Set default fix value
   if [ ! $FIX ]; then
     fix=""
@@ -410,9 +407,14 @@ if $do_SR_STXS_H_inc; then
     fix="-n ${FIX}"
   fi
   for dtype in $DTYPE; do
+    if [ $dtype == 'asimov' ]; then
+      extconst_massres_wz_0='0_0.141'
+      extconst_massres_wz_1='0_0.146'
+      extconst_massres_wz_2='0_0.212'
+    fi
     p_opt="mu_Higgs_pt0=${mu_Higgs_pt0},mu_Higgs_pt1=${mu_Higgs_pt1},mu_Higgs_pt2=${mu_Higgs_pt2},mu_Higgs_pt3=${mu_Higgs_pt3},mu_Zboson_b0=${mu_Zboson_b0},mu_Zboson_b1=${mu_Zboson_b1},mu_Zboson_b2=${mu_Zboson_b2},mu_ttbar_b0=${mu_ttbar_b0},mu_ttbar_b1=${mu_ttbar_b1},mu_ttbar_b2=${mu_ttbar_b2},yield_QCD_srl1=${yield_QCD_srl1},c_srl1=${c_srl1},d_srl1=${d_srl1},e_srl1=${e_srl1},f_srl1=${f_srl1},g_srl1=${g_srl1},h_srl1=${h_srl1},yield_QCD_srl2=${yield_QCD_srl2},c_srl2=${c_srl2},d_srl2=${d_srl2},e_srl2=${e_srl2},f_srl2=${f_srl2},g_srl2=${g_srl2},h_srl2=${h_srl2},yield_QCD_srs0=${yield_QCD_srs0},c_srs0=${c_srs0},d_srs0=${d_srs0},e_srs0=${e_srs0},f_srs0=${f_srs0},g_srs0=${g_srs0},h_srs0=${h_srs0},yield_QCD_srs1=${yield_QCD_srs1},c_srs1=${c_srs1},d_srs1=${d_srs1},e_srs1=${e_srs1},f_srs1=${f_srs1},g_srs1=${g_srs1},h_srs1=${h_srs1},yield_QCD_srs2=${yield_QCD_srs2},c_srs2=${c_srs2},d_srs2=${d_srs2},e_srs2=${e_srs2},f_srs2=${f_srs2},g_srs2=${g_srs2},h_srs2=${h_srs2}"
-    outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
-    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p ${p_opt} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix} --printChi 1 --NPExtGaussConstr alpha_JET_MassRes_WZ_comb_0=${extconst_massres_wz_0},alpha_JET_MassRes_WZ_comb_1=${extconst_massres_wz_1},alpha_JET_MassRes_WZ_comb_2=${extconst_massres_wz_2}"
+    outname="${title}_${dtype}_${TAG}_minos${MINOS}${nom}.root"
+    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p ${p_opt} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${MINOS} ${fix} --printChi 1 --NPExtGaussConstr alpha_JET_MassRes_WZ_comb_0=${extconst_massres_wz_0},alpha_JET_MassRes_WZ_comb_1=${extconst_massres_wz_1},alpha_JET_MassRes_WZ_comb_2=${extconst_massres_wz_2}"
     if ! $CONDOR; then
       echo "Running job locally: ${cmd}"
       eval $cmd
@@ -429,12 +431,6 @@ if $do_CRttbar_inc; then
   minStrat='1'
   minTolerance='1e-5'
   hesse='1'
-  # Set default minos value
-  if [ ! $MINOS ]; then
-    minos=1
-  else
-    minos=$MINOS
-  fi
   # Set default fix value
   if [ ! $FIX ]; then
     fix=""
@@ -442,8 +438,8 @@ if $do_CRttbar_inc; then
     fix="-n ${FIX}"
   fi
   for dtype in $DTYPE; do
-    outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
-    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_ttbar=${mu_ttbar} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix}"
+    outname="${title}_${dtype}_${TAG}_minos${MINOS}${nom}.root"
+    cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_ttbar=${mu_ttbar} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${MINOS} ${fix}"
     if ! $CONDOR; then
       echo "Running job locally: ${cmd}"
       eval $cmd
@@ -459,12 +455,6 @@ if $do_CRttbar_bins; then
   minStrat='1'
   minTolerance='1e-5'
   hesse='1'
-  # Set default minos value
-  if [ ! $MINOS ]; then
-    minos=1
-  else
-    minos=$MINOS
-  fi
   # Set default fix value
   if [ ! $FIX ]; then
     fix=""
@@ -474,8 +464,8 @@ if $do_CRttbar_bins; then
   for dtype in $DTYPE; do
     for bin in '0' '1' '2'; do
       title="CRttbar_b${bin}"
-      outname="${title}_${dtype}_${TAG}_minos${minos}${nom}.root"
-      cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_ttbar_b${bin}=${mu_ttbar} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${minos} ${fix}"
+      outname="${title}_${dtype}_${TAG}_minos${MINOS}${nom}.root"
+      cmd="quickFit -f workspace/hbbj/${title}/${title}_model_${dtype}_${TAG}.root -d combData -p mu_ttbar_b${bin}=${mu_ttbar} -o output/${outname} --savefitresult 1 --saveWS true --ssname quickfit --minStrat ${minStrat} --minTolerance ${minTolerance} --hesse ${hesse} --minos ${MINOS} ${fix}"
     if ! $CONDOR; then
       echo "Running job locally: ${cmd}"
       eval $cmd
@@ -490,4 +480,4 @@ fi
 cd ..
 
 # Unset variables after use
-unset TAG MODE FIX MINOS
+unset TAG MODE FIX
